@@ -160,4 +160,4 @@ go vet ./...
 
 ## 许可证
 
-Apache-2.0（详见 [LICENSE](./LICENSE)）。
+内部二方 SDK，许可证待定。

@@ -4,4 +4,4 @@
 - 门面覆盖 Projects（Create/List/Iter 惰性翻页）与 Agent（Start/Current/Cancel/Events + SSE 事件流）；Generated() 逃生舱覆盖全部 35 个 operation。
 - 统一错误分层（TransportError/APIError，RFC 7807）、有限重试（指数退避、Retry-After 优先）、每请求动态取凭证。
 - 纯 Go 标准库、无第三方依赖；module 根即仓库根，版本 tag 为干净的 vX.Y.Z（无子目录前缀）。
-- 对齐阿里云 Go SDK 工程结构：client/ 单一消费入口包 + 根级 README.md/README-CN.md/LICENSE/ChangeLog.txt。
+- 对齐阿里云 Go SDK 工程结构：client/ 单一消费入口包 + 根级 README.md/README-CN.md/ChangeLog.txt。

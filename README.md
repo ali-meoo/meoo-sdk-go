@@ -97,4 +97,4 @@ See [ChangeLog.txt](./ChangeLog.txt) for per-release changes.
 
 ## License
 
-Apache-2.0 (see `LICENSE`).
+License: TBD (internal second-party SDK).
