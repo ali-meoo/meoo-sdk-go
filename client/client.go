@@ -1,5 +1,5 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package meoo）。
+ * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
  *
  * 同步公共入口，等价于 TypeScript 的 MeooClient、Java 的 Meoo 与 Python 的 Meoo：认证、统一错误、
  * 有限重试、分页和 SSE 由手写 Runtime 负责，业务模型直接复用 generated 包的生成模型。
@@ -23,7 +23,7 @@
  *	}
  */
 
-package meoo
+package client
 
 import (
 	"context"

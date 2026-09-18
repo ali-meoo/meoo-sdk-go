@@ -1,5 +1,5 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package meoo）。
+ * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
  *
  * SSE 帧解析（runtime-spec/streaming.md），与 Java com.meoo.runtime.Sse、Python
  * meoo/runtime/sse.py、TypeScript runtime/sse.ts 逐条对齐：忽略注释帧（heartbeat 用注释帧承载）
@@ -7,7 +7,7 @@
  * 没有 data 的帧丢弃、data 非法 JSON 时报错。
  */
 
-package meoo
+package client
 
 import (
 	"encoding/json"

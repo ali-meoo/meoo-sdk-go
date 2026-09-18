@@ -1,11 +1,11 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package meoo）。
+ * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
  *
  * 分页结果封装，语义对齐 Java com.meoo.runtime.Page 与 TypeScript Page。泛型参数 T 通常是
  * 生成模型（例如 generated.Project）。
  */
 
-package meoo
+package client
 
 // Page 是一页结果；NextPageToken 为空表示没有下一页。
 type Page[T any] struct {

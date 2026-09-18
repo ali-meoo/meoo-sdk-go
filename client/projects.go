@@ -1,5 +1,5 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package meoo）。
+ * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
  *
  * 项目资源，语义对齐 Java com.meoo.runtime.ProjectsResource 与 TypeScript ProjectsResource。
  * facade 只封装最高频的 operation；其余 operation 可用 Client.Generated() 的生成客户端，
@@ -9,7 +9,7 @@
  * 结构 + 显式 json tag 解码，从而把「生成器字段命名变化」的编译期风险降到最低。
  */
 
-package meoo
+package client
 
 import (
 	"context"

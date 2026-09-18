@@ -1,5 +1,5 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package meoo）。
+ * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
  *
  * 公开模型别名：把门面签名与文档用到的生成模型 re-export 到 meoo 包，使用者写
  * meoo.Project / meoo.AgentRun 即可，无需直接依赖内部 generated 包（对齐 Python 顶层
@@ -9,7 +9,7 @@
  * 全部生成类型。
  */
 
-package meoo
+package client
 
 import "gitlab.alibaba-inc.com/oneday/meoo-sdk-go/generated"
 

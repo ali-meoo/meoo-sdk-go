@@ -1,5 +1,5 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package meoo）测试基础设施。
+ * Meoo Open API Go SDK —— 手写高层 Runtime（package client）测试基础设施。
  *
  * 等价于 Java com.meoo.testing.StubServer 与 com.meoo.testing.Fixtures：
  *   - stubServer 基于 net/http/httptest，走真实 TCP 与真实 *http.Client，避免为测试引入依赖，
@@ -8,11 +8,11 @@
  *   - fixture 从测试工作目录向上查找仓库根下的 runtime-spec/fixtures/<relative>，与三语言
  *     共用同一份跨语言 fixture（同题同解）。
  *
- * 这些测试与被测代码同属 package meoo（内部测试），以便直接断言未导出的 encodeSegment、
+ * 这些测试与被测代码同属 package client（内部测试），以便直接断言未导出的 encodeSegment、
  * newClientOptions、newAPIError、newEventStream 等实现细节。
  */
 
-package meoo
+package client
 
 import (
 	"io"

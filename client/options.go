@@ -1,5 +1,5 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package meoo）。
+ * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
  *
  * 客户端级与单次请求级配置。默认值对齐 Java com.meoo.runtime.ClientOptions、TypeScript
  * ClientOptions 与 Python Meoo 构造参数：baseURL=https://meoo.com、timeout=30s、maxRetries=2、
@@ -7,7 +7,7 @@
  * 校验分支与 Java 构造函数逐条对应。
  */
 
-package meoo
+package client
 
 import (
 	"net/http"

@@ -1,5 +1,5 @@
 /*
- * Meoo Open API Go SDK —— package meoo 测试。
+ * Meoo Open API Go SDK —— package client 测试。
  *
  * 镜像 Java TransportTest 里对 ApiError 的断言（surfacesApiErrorAfterRetriesAreExhausted、
  * fallsBackToTraceIdHeaderAndStatusMessage），并直接验证错误分层与 errors.As/Is 语义
@@ -7,7 +7,7 @@
  * 断言 newAPIError，把「problem 解析」与「传输重试」两个关注点解耦。
  */
 
-package meoo
+package client
 
 import (
 	"context"

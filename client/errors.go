@@ -1,5 +1,5 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package meoo，不由 OpenAPI Generator 产出）。
+ * Meoo Open API Go SDK —— 手写高层 Runtime（package client，不由 OpenAPI Generator 产出）。
  *
  * 统一错误分层，语义对齐 Java 的 com.meoo.runtime.errors 与 TypeScript/Python Runtime，
  * 并落实 runtime-spec 的错误约定：
@@ -12,7 +12,7 @@
  * cause，支持 errors.Is(err, context.Canceled) 之类的链式判定。
  */
 
-package meoo
+package client
 
 import (
 	"encoding/json"

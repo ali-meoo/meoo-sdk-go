@@ -1,11 +1,11 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package meoo）。
+ * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
  *
  * Agent Run 资源，语义对齐 Java com.meoo.runtime.AgentResource 与 TypeScript AgentResource。
  * Events 返回的 *EventStream 持有连接，必须 Close。仅复用 AgentRun 类型，不引用其字段名。
  */
 
-package meoo
+package client
 
 import (
 	"context"

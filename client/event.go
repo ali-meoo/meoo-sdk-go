@@ -1,11 +1,11 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package meoo）。
+ * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
  *
  * SSE 事件帧模型，对齐 Java com.meoo.runtime.AgentEvent 与 TypeScript AgentEvent。
  * 契约前向兼容条款要求客户端忽略未知的 SSE 事件名，因此未知 event 原样透出且不报错。
  */
 
-package meoo
+package client
 
 import "encoding/json"
 

@@ -1,5 +1,5 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package meoo）。
+ * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
  *
  * 同步 SSE 事件流：按行惰性读取，收到契约声明的终态事件或流结束后 Next 返回 io.EOF，
  * 且不做重连（runtime-spec/streaming.md 第 5、6 条）。对齐 Java com.meoo.runtime.EventStream
@@ -9,7 +9,7 @@
  * message.snapshot 帧；Reader.ReadString 无此限制，与 Java BufferedReader.readLine 一致。
  */
 
-package meoo
+package client
 
 import (
 	"bufio"

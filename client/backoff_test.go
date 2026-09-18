@@ -1,11 +1,11 @@
 /*
- * Meoo Open API Go SDK —— package meoo 测试。
+ * Meoo Open API Go SDK —— package client 测试。
  *
  * 镜像 Java com.meoo.runtime.BackoffTest：默认退避必须与 TypeScript retryDelay、Python
  * request 的等待时长完全一致（runtime-spec/retry.md）。断言逐条对应，改默认值前必须同步四语言。
  */
 
-package meoo
+package client
 
 import (
 	"testing"

@@ -1,5 +1,5 @@
 /*
- * Meoo Open API Go SDK —— package meoo 测试。
+ * Meoo Open API Go SDK —— package client 测试。
  *
  * 镜像 Java com.meoo.runtime.UrlsTest：路径与查询编码必须与 TypeScript encodeURIComponent、
  * Python quote(safe="") 的结果逐字节一致（runtime-spec 是唯一真源）。
@@ -8,7 +8,7 @@
  * queryString 前跳过（见 projects.go），因此这里断言空串编码为空串即可。
  */
 
-package meoo
+package client
 
 import "testing"
 

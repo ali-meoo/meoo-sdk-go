@@ -1,5 +1,5 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package meoo）。
+ * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
  *
  * 动态凭证来源，落实 runtime-spec/auth.md 第 2 条：普通资源 API 使用
  * Authorization: Bearer <credential>，且凭证必须支持每次请求动态取值——OAuth refresh 与
@@ -8,7 +8,7 @@
  * 对齐 Java com.meoo.runtime.CredentialProvider 与 TypeScript CredentialProvider。
  */
 
-package meoo
+package client
 
 import "context"
 

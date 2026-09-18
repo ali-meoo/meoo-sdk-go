@@ -1,5 +1,5 @@
 /*
- * Meoo Open API Go SDK —— package meoo 测试。
+ * Meoo Open API Go SDK —— package client 测试。
  *
  * 镜像 Java com.meoo.runtime.TransportTest：认证头、每请求动态取凭证、幂等与有限重试、错误
  * 分层（runtime-spec/{auth,retry,streaming}.md）。Java 的 requestAsync 两个用例在 Go 不适用
@@ -9,7 +9,7 @@
  * Transport.Stream + EventStream，故这里补充 stream 的用例。
  */
 
-package meoo
+package client
 
 import (
 	"context"

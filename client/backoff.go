@@ -1,5 +1,5 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package meoo）。
+ * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
  *
  * 重试等待策略，语义见 runtime-spec/retry.md，与 Java com.meoo.runtime.Backoff、
  * TypeScript retryDelay、Python Runtime 逐条对齐：Retry-After（秒）优先，否则
@@ -8,7 +8,7 @@
  * （改默认值必须先改 runtime-spec 并同步 Java/TS/Python/Go 四语言）。
  */
 
-package meoo
+package client
 
 import (
 	"strconv"

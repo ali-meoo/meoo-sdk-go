@@ -1,5 +1,5 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package meoo）。
+ * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
  *
  * 传输层：认证头、超时、有限重试、错误分层与 SSE，语义见 runtime-spec/{auth,retry,streaming}.md，
  * 与 Java com.meoo.runtime.Transport、TypeScript runtime/transport.ts 逐条对齐。生成客户端只负责
@@ -12,7 +12,7 @@
  * 直接归为 *TransportError 不重试，避免四语言行为漂移。
  */
 
-package meoo
+package client
 
 import (
 	"bytes"

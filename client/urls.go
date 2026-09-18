@@ -1,5 +1,5 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package meoo）。
+ * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
  *
  * 路径段与查询参数编码，语义对齐 Java com.meoo.runtime.Urls（encodeURIComponent /
  * urllib.parse.quote(safe="") 一族）。runtime-spec 是四语言行为的唯一真源：Java 的
@@ -15,7 +15,7 @@
  * 一致地走 Generated() 即可。
  */
 
-package meoo
+package client
 
 import (
 	"net/url"

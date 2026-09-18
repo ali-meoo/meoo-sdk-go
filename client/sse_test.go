@@ -1,12 +1,12 @@
 /*
- * Meoo Open API Go SDK —— package meoo 测试。
+ * Meoo Open API Go SDK —— package client 测试。
  *
  * 镜像 Java com.meoo.runtime.SseTest，并与 sdks/python/tests/test_sse.py、
  * sdks/typescript/src/test/sse.test.ts 同题同解（runtime-spec/streaming.md）。共享 fixture
  * runtime-spec/fixtures/sse/basic.txt 必须解析出完全一致的三个事件。
  */
 
-package meoo
+package client
 
 import (
 	"encoding/json"
