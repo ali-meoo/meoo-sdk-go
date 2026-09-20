@@ -1,7 +1,7 @@
 2026-09-20 Version 0.1.0
 - 首个版本：Meoo Open API Go SDK。
 - 对外单一 client 包：高层资源（Projects/Agent）、全部请求与响应模型、低层 HTTP 客户端，以及传输 / 错误 / SSE / 重试 / 分页运行时，统一收敛在 client 包内。import .../meoo-sdk-go/client 即可，无需引入任何内部包。
-- 高层资源覆盖 Projects（Create/List/Iter 惰性翻页）与 Agent（Start/Current/Cancel/Events + SSE 事件流）；Generated() 覆盖全部 12 组 35 个 operation。
+- 高层资源覆盖 Projects（Create/List/Iter 惰性翻页）与 Agent（Start/Current/Cancel/Events + SSE 事件流）；API() 覆盖全部 12 组 35 个 operation。
 - 统一错误分层（APIError / TransportError，RFC 7807）、有限重试（指数退避、Retry-After 优先）、每请求动态取凭证。
 - 纯 Go 标准库、无第三方依赖；module 根即仓库根，版本 tag 为干净的 vX.Y.Z。
 - 提供中英双语文档：README.md（英）、README-CN.md（中），聚焦接口清单与开发者用法。

@@ -101,10 +101,10 @@ release idle connections.
 | `Cancel` | `(ctx, projectID, runID string, *RequestOptions) (*AgentRun, error)` |
 | `Events` | `(ctx, projectID, runID string, *RequestOptions) (*EventStream, error)` — SSE stream |
 
-### Every operation (`Generated()`)
+### Every operation (`API()`)
 
 The high-level resources wrap the most frequent operations. Everything else is reachable
-through the request-builder client returned by `Generated()`, covering **12 groups / 35
+through the request-builder client returned by `API()`, covering **12 groups / 35
 operations**. It shares the base URL and `*http.Client` with the main client; inject
 credentials first via `Context(ctx)`:
 
@@ -113,13 +113,13 @@ ctx, err := c.Context(context.Background())
 if err != nil {
 	return err
 }
-user, _, err := c.Generated().UserApi.GetUser(ctx).Execute()
+user, _, err := c.API().UserApi.GetUser(ctx).Execute()
 if err != nil {
 	return err
 }
 ```
 
-| Group (`Generated()` field) | Operations |
+| Group (`API()` field) | Operations |
 |---|---|
 | `ProjectsApi` | CreateProject, CreateProjectToken, GetProjectWatermarkRemoval, ListProjects, UpdateProjectWatermarkRemoval |
 | `AgentRunsApi` | StartAgentRun, GetCurrentAgentRun, CancelAgentRun, StreamAgentRunEvents, RespondToAgentAction, CreateAgentUpload |

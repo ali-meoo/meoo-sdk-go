@@ -1,7 +1,7 @@
 /*
  * Meoo Open API Go SDK — 项目资源。
  *
- * Projects() 封装最高频的项目 operation；其余 operation 可用 Client.Generated() 的完整 API
+ * Projects() 封装最高频的项目 operation；其余 operation 可用 Client.API() 的完整 API
  * 客户端，或 Client.Transport() 直接发请求。
  *
  * 列表信封用局部结构 + 显式 json tag 解码，只依赖响应的 JSON 字段名，把底层模型字段命名

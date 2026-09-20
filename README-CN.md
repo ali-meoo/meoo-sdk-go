@@ -94,22 +94,22 @@ func main() {
 | `Cancel` | `(ctx, projectID, runID string, *RequestOptions) (*AgentRun, error)` |
 | `Events` | `(ctx, projectID, runID string, *RequestOptions) (*EventStream, error)` — SSE 事件流 |
 
-### 全量 operation（`Generated()`）
+### 全量 operation（`API()`）
 
-高层资源只封装最高频的 operation；其余全部 operation 通过 `Generated()` 返回的 request-builder 客户端调用，覆盖 **12 组 35 个** operation。它与主客户端共享 `baseURL` 与 `*http.Client`，调用前先用 `Context(ctx)` 注入凭证：
+高层资源只封装最高频的 operation；其余全部 operation 通过 `API()` 返回的 request-builder 客户端调用，覆盖 **12 组 35 个** operation。它与主客户端共享 `baseURL` 与 `*http.Client`，调用前先用 `Context(ctx)` 注入凭证：
 
 ```go
 ctx, err := c.Context(context.Background())
 if err != nil {
 	return err
 }
-user, _, err := c.Generated().UserApi.GetUser(ctx).Execute()
+user, _, err := c.API().UserApi.GetUser(ctx).Execute()
 if err != nil {
 	return err
 }
 ```
 
-| 分组（`Generated()` 字段） | operation |
+| 分组（`API()` 字段） | operation |
 |---|---|
 | `ProjectsApi` | CreateProject、CreateProjectToken、GetProjectWatermarkRemoval、ListProjects、UpdateProjectWatermarkRemoval |
 | `AgentRunsApi` | StartAgentRun、GetCurrentAgentRun、CancelAgentRun、StreamAgentRunEvents、RespondToAgentAction、CreateAgentUpload |
