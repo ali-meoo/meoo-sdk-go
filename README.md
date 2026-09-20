@@ -22,12 +22,12 @@ go get gitlab.alibaba-inc.com/oneday/meoo-sdk-go/client
 
 ## Layout
 
-The module root is the repository root, containing two packages:
+The module root is the repository root. The public API is the single `client` package; `internal/generated` (generated api/model + handwritten static core) is internal and not importable by consumers:
 
 | Package / dir | Source | Purpose |
 |---|---|---|
-| `generated/api_*.go`, `generated/model_*.go` | OpenAPI Generator (do not edit) | Contract-driven request-builders, params, schema structs |
-| `generated/{client,configuration,response,utils,transport,codec,params,errors}.go` | Handwritten static core | HTTP dispatch, (de)serialization, param encoding, common errors |
+| `internal/generated/api_*.go`, `internal/generated/model_*.go` | OpenAPI Generator (do not edit) | Contract-driven request-builders, params, schema structs |
+| `internal/generated/{client,configuration,response,utils,transport,codec,params,errors}.go` | Handwritten static core | HTTP dispatch, (de)serialization, param encoding, common errors |
 | `client/**` | Handwritten high-level runtime | Auth / timeout / bounded retry / SSE / pagination / error taxonomy, and the public facade |
 
 ## Usage
@@ -85,10 +85,10 @@ go vet ./...
 
 ## Provenance
 
-This repository is a published artifact: `generated/api_*.go` and `model_*.go` are
+This repository is a published artifact: `internal/generated/api_*.go` and `model_*.go` are
 produced by OpenAPI Generator from the contract, then mirrored here from the source
 monorepo `meoo-open-sdk` (`sdks/go/`). Generator scripts, the contract copy and the
-live E2E suite stay in the source monorepo. Never edit `generated/api_*.go` or
+live E2E suite stay in the source monorepo. Never edit `internal/generated/api_*.go` or
 `model_*.go` by hand.
 
 ## Changelog

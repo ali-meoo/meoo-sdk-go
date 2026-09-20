@@ -28,7 +28,7 @@ package client
 import (
 	"context"
 
-	"gitlab.alibaba-inc.com/oneday/meoo-sdk-go/generated"
+	"gitlab.alibaba-inc.com/oneday/meoo-sdk-go/internal/generated"
 )
 
 // Client 是 Meoo Open API 的同步公共客户端。实例并发安全，可跨 goroutine 复用。

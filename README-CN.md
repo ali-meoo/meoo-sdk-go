@@ -18,12 +18,12 @@ go get gitlab.alibaba-inc.com/oneday/meoo-sdk-go/client
 
 ## 结构
 
-module 根即仓库根，下辖两个包，按“是否由契约驱动”划分职责：
+module 根即仓库根；对外公开面只有 client 一个包，internal/generated 为内部实现（消费方不可直接 import），二者按，按“是否由契约驱动”划分职责：
 
 | 包 / 目录 | 来源 | 说明 |
 |---|---|---|
-| `generated/api_*.go`、`generated/model_*.go` | **OpenAPI Generator 自动生成**（禁止手改） | 契约驱动：operation 的 request-builder、参数、schema 对应的结构体 |
-| `generated/{client,configuration,response,utils,transport,codec,params,errors}.go` | **手写静态基础设施** | 与契约无关的 HTTP 发起调用、序列化反序列化、参数编码与通用异常处理；提供生成 api/model 依赖的同包符号面 |
+| `internal/generated/api_*.go`、`internal/generated/model_*.go` | **OpenAPI Generator 自动生成**（禁止手改） | 契约驱动：operation 的 request-builder、参数、schema 对应的结构体 |
+| `internal/generated/{client,configuration,response,utils,transport,codec,params,errors}.go` | **手写静态基础设施** | 与契约无关的 HTTP 发起调用、序列化反序列化、参数编码与通用异常处理；提供生成 api/model 依赖的同包符号面 |
 | `client/**` | **手写高层 Runtime** | 认证/超时/有限重试/SSE/分页/错误分层的正式运行时语义，以及公共客户端 facade |
 
 `client` 包的业务模型直接复用 `generated` 的模型**类型**（并 re-export 为 `client.Project`、`client.AgentRun` 等别名），避免字段重复定义；但列表信封一律用局部结构 + 显式 `json` tag 解码，不引用生成模型的 Go 字段名，把“生成器字段命名变化”的编译期风险降到最低。
@@ -150,9 +150,9 @@ go vet ./...
 
 ## 来源与生成
 
-本仓是**发布产物**：`generated/api_*.go`、`model_*.go` 由 OpenAPI Generator（版本锁定）从契约生成，连同手写静态基础设施与 `client` Runtime，统一在源仓库 `meoo-open-sdk`（monorepo 的 `sdks/go/`）中生成、验证，再镜像到此处。**生成器脚本、契约副本、实网 E2E（覆盖全部 35 operation）与跨语言一致性校验都保留在源仓库**，本仓不含它们，以保持发布产物精简。
+本仓是**发布产物**：`internal/generated/api_*.go`、`model_*.go` 由 OpenAPI Generator（版本锁定）从契约生成，连同手写静态基础设施与 `client` Runtime，统一在源仓库 `meoo-open-sdk`（monorepo 的 `sdks/go/`）中生成、验证，再镜像到此处。**生成器脚本、契约副本、实网 E2E（覆盖全部 35 operation）与跨语言一致性校验都保留在源仓库**，本仓不含它们，以保持发布产物精简。
 
-`generated/api_*.go`、`model_*.go` **禁止手改**；需要变更时请在源仓库改契约或生成约束后重新生成，再镜像过来。
+`internal/generated/api_*.go`、`model_*.go` **禁止手改**；需要变更时请在源仓库改契约或生成约束后重新生成，再镜像过来。
 
 ## 发行说明
 

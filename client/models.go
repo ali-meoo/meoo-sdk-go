@@ -11,7 +11,7 @@
 
 package client
 
-import "gitlab.alibaba-inc.com/oneday/meoo-sdk-go/generated"
+import "gitlab.alibaba-inc.com/oneday/meoo-sdk-go/internal/generated"
 
 type (
 	// Project 是项目资源（re-export 自内部 generated.Project）。
