@@ -4,7 +4,7 @@
 # Use this file to prevent files from being overwritten by the generator.
 # The patterns follow closely to .gitignore or .dockerignore.
 
-# 本文件是 sdks/go/generated/ 内唯一手工维护的忽略文件，作用等价于 Java 的
+# 本文件是 sdks/go/internal/generated/ 内唯一手工维护的忽略文件，作用等价于 Java 的
 # sdks/java/.openapi-generator-ignore：go 生成器会顺带产出打包脚本、文档、桩测试和
 # 支撑文件（client/configuration/response/utils），这里统一裁剪，只保留真正由契约
 # 驱动的 api_*.go 与 model_*.go，以及 .openapi-generator 元数据。
@@ -25,7 +25,7 @@ docs/
 test/
 
 # ── 生成器把整份 spec 复制到 api/openapi.yaml。它含全部 operationId，若不排除，
-#    verify-operation-coverage.sh 对 sdks/go/generated 的 grep 会命中这份副本而“假
+#    verify-operation-coverage.sh 对 sdks/go/internal/generated 的 grep 会命中这份副本而“假
 #    通过”（即便真正的 api_*.go 没生成）。契约唯一真源是 spec/，这里排除副本；
 #    注意 api/** 只匹配 api/ 目录，不会误伤同目录下 api_ 前缀的生成文件。────────
 api/**

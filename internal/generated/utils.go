@@ -2,7 +2,7 @@
  * Meoo Open API Go SDK —— 手写静态基础设施（不由 OpenAPI Generator 产出）。
  *
  * 本文件与契约无关：不随 operationId / schema 变化，已在
- * sdks/go/generated/.openapi-generator-ignore 中排除生成器版本，可像普通手写代码维护。
+ * sdks/go/internal/generated/.openapi-generator-ignore 中排除生成器版本，可像普通手写代码维护。
  * 生成器只负责由契约驱动的 api_*.go 与 model_*.go；改这里不需要重新生成，但必须保持
  * 生成代码依赖的同包符号面（Nullable* / Ptr* / MappedNullable / IsNil / newStrictDecoder
  * / reportError）。这些符号由 openapi-generator 7.14.0 的 go/utils.mustache 定义，
