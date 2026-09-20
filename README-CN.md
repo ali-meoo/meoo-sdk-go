@@ -2,7 +2,7 @@
 
 # Meoo Open API Go SDK
 
-Meoo 开放平台官方 Go SDK。**仅用 Go 标准库实现，无任何第三方依赖。** 提供并发安全的同步客户端，覆盖 Bearer / API Key 认证、统一错误分层、有限重试、项目分页与 Agent Run/SSE 事件流，并通过完整客户端覆盖全部 **35 个** Open API operation。
+Meoo 开放平台官方 Go SDK。**仅用 Go 标准库实现，无任何第三方依赖。** 提供并发安全的同步客户端，覆盖 Bearer / API Key 认证、统一错误分层、有限重试、项目分页与 Agent Run/SSE 事件流，并通过完整客户端覆盖全部 **57 个** Open API operation。
 
 ## 环境要求
 
@@ -96,7 +96,7 @@ func main() {
 
 ### 全量 operation（`API()`）
 
-高层资源只封装最高频的 operation；其余全部 operation 通过 `API()` 返回的 request-builder 客户端调用，覆盖 **12 组 35 个** operation。它与主客户端共享 `baseURL` 与 `*http.Client`，调用前先用 `Context(ctx)` 注入凭证：
+高层资源只封装最高频的 operation；其余全部 operation 通过 `API()` 返回的 request-builder 客户端调用，覆盖 **16 组 57 个** operation。它与主客户端共享 `baseURL` 与 `*http.Client`，调用前先用 `Context(ctx)` 注入凭证：
 
 ```go
 ctx, err := c.Context(context.Background())
@@ -111,17 +111,21 @@ if err != nil {
 
 | 分组（`API()` 字段） | operation |
 |---|---|
-| `ProjectsApi` | CreateProject、CreateProjectToken、GetProjectWatermarkRemoval、ListProjects、UpdateProjectWatermarkRemoval |
-| `AgentRunsApi` | StartAgentRun、GetCurrentAgentRun、CancelAgentRun、StreamAgentRunEvents、RespondToAgentAction、CreateAgentUpload |
+| `ProjectsApi` | CreateProject、CreateProjectToken、DeleteProject、GetProjectWatermarkRemoval、ListProjects、UpdateProjectWatermarkRemoval |
+| `AgentRunsApi` | StartAgentRun、GetCurrentAgentRun、CancelAgentRun、StreamAgentRunEvents、RespondToAgentAction、CreateAgentUpload、GetAgentCapabilities |
 | `AgentHistoryApi` | ListAgentConversations、ListAgentConversationMessages |
-| `CloudDatabaseApi` | ExecuteCloudDatabaseQuery、GetCloudDatabaseStatus、ListCloudDatabaseTables |
-| `CloudFunctionsApi` | ListCloudFunctions、ListCloudFunctionLogs |
-| `CloudSecretsApi` | ListCloudSecrets、PutCloudSecret、DeleteCloudSecret |
-| `CloudStorageApi` | ListCloudStorageBuckets、ListCloudStorageObjects |
 | `PreviewApi` | CreateAgentPreviewLink、OpenPreviewShell |
 | `ReleasesApi` | CreateRelease、GetCurrentRelease、ListReleases、PrepareReleaseUpload、CompleteReleaseUpload、UnpublishRelease |
+| `CloudDatabaseApi` | EnableProjectCloud、ExecuteCloudDatabaseQuery、GetCloudDatabaseStatus、ListCloudDatabaseTables、GetProjectCloudCredentials、PutCloudAuthProviders |
+| `CloudFunctionsApi` | ListCloudFunctions、PutCloudFunction、DeleteCloudFunction、ListCloudFunctionLogs |
+| `CloudStorageApi` | ListCloudStorageBuckets、ListCloudStorageObjects、PutCloudStorageObject、DeleteCloudStorageObjects |
+| `CloudSecretsApi` | ListCloudSecrets、PutCloudSecret、DeleteCloudSecret |
+| `SandboxesApi` | KillProjectSandbox |
 | `SkillsApi` | ListSelectableSkills、UploadSkill |
 | `SourceApi` | CreateCurrentProjectSourceExport |
+| `TeamMembersApi` | CreateTeamMember、ListTeamMembers、GetTeamMember、UpdateTeamMember、DeleteTeamMember、IssueTeamMemberToken、GetTeamCredentialContext |
+| `BillingApi` | QueryTeamBillingFlow、QueryTeamBillingPointsSummary、QueryTeamBillingProjectModelFlow |
+| `EntitlementsApi` | QueryEntitlementUsage、QueryTeamEntitlementUsage |
 | `UserApi` | GetUser |
 
 所有请求 / 响应模型（如 `Project`、`AgentRun`、`CloudFunction`、`AgentMessageDeltaEventData`）都在 `client` 包内，直接以 `meoo.<类型名>` 使用。

@@ -6,7 +6,7 @@ The official Go SDK for the Meoo Open API. Written with the **Go standard librar
 no third-party dependencies.** It provides a concurrency-safe synchronous client covering
 Bearer / API-Key authentication, a unified error taxonomy, bounded retries, project
 pagination, and Agent Run/SSE streaming, plus a full client that reaches every one of the
-**35** Open API operations.
+**57** Open API operations.
 
 ## Requirements
 
@@ -104,7 +104,7 @@ release idle connections.
 ### Every operation (`API()`)
 
 The high-level resources wrap the most frequent operations. Everything else is reachable
-through the request-builder client returned by `API()`, covering **12 groups / 35
+through the request-builder client returned by `API()`, covering **16 groups / 57
 operations**. It shares the base URL and `*http.Client` with the main client; inject
 credentials first via `Context(ctx)`:
 
@@ -121,17 +121,21 @@ if err != nil {
 
 | Group (`API()` field) | Operations |
 |---|---|
-| `ProjectsApi` | CreateProject, CreateProjectToken, GetProjectWatermarkRemoval, ListProjects, UpdateProjectWatermarkRemoval |
-| `AgentRunsApi` | StartAgentRun, GetCurrentAgentRun, CancelAgentRun, StreamAgentRunEvents, RespondToAgentAction, CreateAgentUpload |
+| `ProjectsApi` | CreateProject, CreateProjectToken, DeleteProject, GetProjectWatermarkRemoval, ListProjects, UpdateProjectWatermarkRemoval |
+| `AgentRunsApi` | StartAgentRun, GetCurrentAgentRun, CancelAgentRun, StreamAgentRunEvents, RespondToAgentAction, CreateAgentUpload, GetAgentCapabilities |
 | `AgentHistoryApi` | ListAgentConversations, ListAgentConversationMessages |
-| `CloudDatabaseApi` | ExecuteCloudDatabaseQuery, GetCloudDatabaseStatus, ListCloudDatabaseTables |
-| `CloudFunctionsApi` | ListCloudFunctions, ListCloudFunctionLogs |
-| `CloudSecretsApi` | ListCloudSecrets, PutCloudSecret, DeleteCloudSecret |
-| `CloudStorageApi` | ListCloudStorageBuckets, ListCloudStorageObjects |
 | `PreviewApi` | CreateAgentPreviewLink, OpenPreviewShell |
 | `ReleasesApi` | CreateRelease, GetCurrentRelease, ListReleases, PrepareReleaseUpload, CompleteReleaseUpload, UnpublishRelease |
+| `CloudDatabaseApi` | EnableProjectCloud, ExecuteCloudDatabaseQuery, GetCloudDatabaseStatus, ListCloudDatabaseTables, GetProjectCloudCredentials, PutCloudAuthProviders |
+| `CloudFunctionsApi` | ListCloudFunctions, PutCloudFunction, DeleteCloudFunction, ListCloudFunctionLogs |
+| `CloudStorageApi` | ListCloudStorageBuckets, ListCloudStorageObjects, PutCloudStorageObject, DeleteCloudStorageObjects |
+| `CloudSecretsApi` | ListCloudSecrets, PutCloudSecret, DeleteCloudSecret |
+| `SandboxesApi` | KillProjectSandbox |
 | `SkillsApi` | ListSelectableSkills, UploadSkill |
 | `SourceApi` | CreateCurrentProjectSourceExport |
+| `TeamMembersApi` | CreateTeamMember, ListTeamMembers, GetTeamMember, UpdateTeamMember, DeleteTeamMember, IssueTeamMemberToken, GetTeamCredentialContext |
+| `BillingApi` | QueryTeamBillingFlow, QueryTeamBillingPointsSummary, QueryTeamBillingProjectModelFlow |
+| `EntitlementsApi` | QueryEntitlementUsage, QueryTeamEntitlementUsage |
 | `UserApi` | GetUser |
 
 Every request/response model (e.g. `Project`, `AgentRun`, `CloudFunction`,
