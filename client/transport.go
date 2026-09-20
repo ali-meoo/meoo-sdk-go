@@ -5,8 +5,8 @@
  * 与 Java com.meoo.runtime.Transport、TypeScript runtime/transport.ts 逐条对齐。生成客户端只负责
  * 普通 REST 请求与模型，facade 的全部网络行为都收敛在这里。Transport 实例并发安全，可跨 goroutine 复用。
  *
- * 与生成层 generated 包的关系：本层自带 *http.Client 与请求构建，不经过 generated.APIClient，
- * 以便统一控制超时/重试/SSE/认证；只在 facade（projects.go / agent.go）里复用 generated 的模型类型。
+ * 与底层 API 客户端的关系：本层自带 *http.Client 与请求构建，不经过 APIClient，
+ * 以便统一控制超时/重试/SSE/认证；只在 facade（projects.go / agent.go）里复用契约模型类型。
  *
  * 重试口径与 Java/TS 保持一致：仅对 429/502/503/504 且「可重试」的请求退避重试；连接失败/超时
  * 直接归为 *TransportError 不重试，避免四语言行为漂移。

@@ -2,7 +2,7 @@
  * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
  *
  * 同步公共入口，等价于 TypeScript 的 MeooClient、Java 的 Meoo 与 Python 的 Meoo：认证、统一错误、
- * 有限重试、分页和 SSE 由手写 Runtime 负责，业务模型直接复用 generated 包的生成模型。
+ * 有限重试、分页和 SSE 由手写 Runtime 负责，业务模型直接复用契约模型类型。
  *
  * 两层协作：
  *   - facade（Projects()/Agent()）覆盖最高频 operation，网络行为收敛在 Transport；
@@ -27,8 +27,6 @@ package client
 
 import (
 	"context"
-
-	"gitlab.alibaba-inc.com/oneday/meoo-sdk-go/internal/generated"
 )
 
 // Client 是 Meoo Open API 的同步公共客户端。实例并发安全，可跨 goroutine 复用。
@@ -37,7 +35,7 @@ type Client struct {
 	transport *Transport
 	projects  *ProjectsResource
 	agent     *AgentResource
-	generated *generated.APIClient
+	generated *APIClient
 }
 
 // NewClient 用函数式选项构造客户端；缺少凭证或参数非法时返回错误（*meooError）。
@@ -82,16 +80,16 @@ func (c *Client) Transport() *Transport { return c.transport }
 //	ctx, err := client.Context(context.Background())
 //	if err != nil { return err }
 //	user, _, err := client.Generated().UserApi.GetUser(ctx).Execute()
-func (c *Client) Generated() *generated.APIClient { return c.generated }
+func (c *Client) Generated() *APIClient { return c.generated }
 
-// Context 在 ctx 上注入当前 Bearer 凭证（generated.ContextAccessToken），供 Generated() 的生成
+// Context 在 ctx 上注入当前 Bearer 凭证（ContextAccessToken），供 Generated() 的生成
 // 客户端使用；凭证动态取值失败返回 *TransportError。
 func (c *Client) Context(ctx context.Context) (context.Context, error) {
 	token, err := c.options.credentials.Token(ctx)
 	if err != nil {
 		return nil, newTransportError("failed to resolve credential", err)
 	}
-	return context.WithValue(ctx, generated.ContextAccessToken, token), nil
+	return context.WithValue(ctx, ContextAccessToken, token), nil
 }
 
 // Close 释放客户端持有的空闲连接。SSE 的 *EventStream 需各自 Close，不由本方法负责。
@@ -103,12 +101,12 @@ func (c *Client) Close() {
 
 // newGeneratedClient 用相同的 baseURL 与 *http.Client 构造生成客户端：覆写 server 列表为 baseURL，
 // 使生成层与 facade 指向同一环境；不设 Host/Scheme，交由 server URL 决定。
-func newGeneratedClient(options *ClientOptions) *generated.APIClient {
-	cfg := generated.NewConfiguration()
+func newGeneratedClient(options *ClientOptions) *APIClient {
+	cfg := NewConfiguration()
 	cfg.HTTPClient = options.httpClient
 	cfg.UserAgent = "meoo-open-sdk/go"
-	cfg.Servers = generated.ServerConfigurations{
+	cfg.Servers = ServerConfigurations{
 		{URL: options.baseURL, Description: "meoo client base URL"},
 	}
-	return generated.NewAPIClient(cfg)
+	return NewAPIClient(cfg)
 }

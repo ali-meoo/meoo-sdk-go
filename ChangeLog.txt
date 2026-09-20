@@ -1,7 +1,7 @@
-2026-09-18 Version 0.1.0
-- 首个独立发布版本：Meoo Open API Go SDK 从 meoo-open-sdk monorepo 的 sdks/go/ 抽取为独立仓 oneday/meoo-sdk-go。
-- 两层结构：generated/（OpenAPI Generator 7.14.0 产出的 api/model + 手写同包静态基础设施）与 client/（手写高层 Runtime 与公共门面 facade）。
-- 门面覆盖 Projects（Create/List/Iter 惰性翻页）与 Agent（Start/Current/Cancel/Events + SSE 事件流）；Generated() 逃生舱覆盖全部 35 个 operation。
-- 统一错误分层（TransportError/APIError，RFC 7807）、有限重试（指数退避、Retry-After 优先）、每请求动态取凭证。
-- 纯 Go 标准库、无第三方依赖；module 根即仓库根，版本 tag 为干净的 vX.Y.Z（无子目录前缀）。
-- 对齐阿里云 Go SDK 工程结构：client/ 单一消费入口包 + 根级 README.md/README-CN.md/ChangeLog.txt。
+2026-09-20 Version 0.1.0
+- 首个独立发布版本：Meoo Open API Go SDK 独立仓 oneday/meoo-sdk-go。
+- 对外单一 client 包：门面（Projects/Agent）、全部请求与响应模型、低层 HTTP 客户端，以及传输 / 错误 / SSE / 重试 / 分页运行时，统一收敛在 client 包内。消费方 import .../meoo-sdk-go/client 即可，无需引入任何内部包。
+- 门面覆盖 Projects（Create/List/Iter 惰性翻页）与 Agent（Start/Current/Cancel/Events + SSE 事件流）；Generated() 逃生舱覆盖全部 12 组 35 个 operation。
+- 统一错误分层（APIError / TransportError，RFC 7807）、有限重试（指数退避、Retry-After 优先）、每请求动态取凭证。
+- 纯 Go 标准库、无第三方依赖；module 根即仓库根，版本 tag 为干净的 vX.Y.Z。
+- 提供中英双语文档：README.md（英）、README-CN.md（中），聚焦接口清单与开发者用法。

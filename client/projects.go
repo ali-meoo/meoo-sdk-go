@@ -5,8 +5,8 @@
  * facade 只封装最高频的 operation；其余 operation 可用 Client.Generated() 的生成客户端，
  * 或 Client.Transport() 直接发请求。
  *
- * 仅复用 generated 的模型「类型」（Project），不引用其 Go 字段名——列表信封用局部
- * 结构 + 显式 json tag 解码，从而把「生成器字段命名变化」的编译期风险降到最低。
+ * 仅复用契约模型的「类型」（Project），不引用其 Go 字段名——列表信封用局部
+ * 结构 + 显式 json tag 解码，从而把「底层模型字段命名变化」的编译期风险降到最低。
  */
 
 package client

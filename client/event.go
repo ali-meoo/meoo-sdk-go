@@ -22,7 +22,7 @@ type AgentEvent struct {
 
 // DataAs 把 Data 反序列化到生成模型或任意结构，例如：
 //
-//	var terminal generated.AgentRunTerminalEvent
+//	var terminal AgentRunTerminalEvent
 //	if err := event.DataAs(&terminal); err != nil { ... }
 //
 // 映射失败返回 *meooError（包装底层 json 错误）。

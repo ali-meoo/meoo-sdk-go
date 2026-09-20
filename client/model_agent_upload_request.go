@@ -1,0 +1,213 @@
+package client
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+)
+
+// checks if the AgentUploadRequest type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &AgentUploadRequest{}
+
+// AgentUploadRequest struct for AgentUploadRequest
+type AgentUploadRequest struct {
+	// 不含目录路径的文件名；不支持 .zip 和 .skill 技能包。
+	Filename string `json:"filename"`
+	// 可选 MIME type，缺省按 application/octet-stream 处理。 仅允许 image/_*、video/_*、audio/_*、text/_* 前缀， 以及 application/pdf、application/json、application/octet-stream。
+	Type *string `json:"type,omitempty" validate:"regexp=^[A-Za-z0-9][A-Za-z0-9!#$&^_.+-]*_\\/[A-Za-z0-9][A-Za-z0-9!#$&^_.+-]*$"`
+	// 调用方声明的文件大小（字节）；默认上限 50MB，超限返回 400。
+	Size int32 `json:"size"`
+}
+
+type _AgentUploadRequest AgentUploadRequest
+
+// NewAgentUploadRequest instantiates a new AgentUploadRequest object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewAgentUploadRequest(filename string, size int32) *AgentUploadRequest {
+	this := AgentUploadRequest{}
+	this.Filename = filename
+	this.Size = size
+	return &this
+}
+
+// NewAgentUploadRequestWithDefaults instantiates a new AgentUploadRequest object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewAgentUploadRequestWithDefaults() *AgentUploadRequest {
+	this := AgentUploadRequest{}
+	return &this
+}
+
+// GetFilename returns the Filename field value
+func (o *AgentUploadRequest) GetFilename() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Filename
+}
+
+// GetFilenameOk returns a tuple with the Filename field value
+// and a boolean to check if the value has been set.
+func (o *AgentUploadRequest) GetFilenameOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Filename, true
+}
+
+// SetFilename sets field value
+func (o *AgentUploadRequest) SetFilename(v string) {
+	o.Filename = v
+}
+
+// GetType returns the Type field value if set, zero value otherwise.
+func (o *AgentUploadRequest) GetType() string {
+	if o == nil || IsNil(o.Type) {
+		var ret string
+		return ret
+	}
+	return *o.Type
+}
+
+// GetTypeOk returns a tuple with the Type field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *AgentUploadRequest) GetTypeOk() (*string, bool) {
+	if o == nil || IsNil(o.Type) {
+		return nil, false
+	}
+	return o.Type, true
+}
+
+// HasType returns a boolean if a field has been set.
+func (o *AgentUploadRequest) HasType() bool {
+	if o != nil && !IsNil(o.Type) {
+		return true
+	}
+
+	return false
+}
+
+// SetType gets a reference to the given string and assigns it to the Type field.
+func (o *AgentUploadRequest) SetType(v string) {
+	o.Type = &v
+}
+
+// GetSize returns the Size field value
+func (o *AgentUploadRequest) GetSize() int32 {
+	if o == nil {
+		var ret int32
+		return ret
+	}
+
+	return o.Size
+}
+
+// GetSizeOk returns a tuple with the Size field value
+// and a boolean to check if the value has been set.
+func (o *AgentUploadRequest) GetSizeOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Size, true
+}
+
+// SetSize sets field value
+func (o *AgentUploadRequest) SetSize(v int32) {
+	o.Size = v
+}
+
+func (o AgentUploadRequest) MarshalJSON() ([]byte, error) {
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o AgentUploadRequest) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["filename"] = o.Filename
+	if !IsNil(o.Type) {
+		toSerialize["type"] = o.Type
+	}
+	toSerialize["size"] = o.Size
+	return toSerialize, nil
+}
+
+func (o *AgentUploadRequest) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"filename",
+		"size",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err
+	}
+
+	for _, requiredProperty := range requiredProperties {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varAgentUploadRequest := _AgentUploadRequest{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varAgentUploadRequest)
+
+	if err != nil {
+		return err
+	}
+
+	*o = AgentUploadRequest(varAgentUploadRequest)
+
+	return err
+}
+
+type NullableAgentUploadRequest struct {
+	value *AgentUploadRequest
+	isSet bool
+}
+
+func (v NullableAgentUploadRequest) Get() *AgentUploadRequest {
+	return v.value
+}
+
+func (v *NullableAgentUploadRequest) Set(val *AgentUploadRequest) {
+	v.value = val
+	v.isSet = true
+}
+
+func (v NullableAgentUploadRequest) IsSet() bool {
+	return v.isSet
+}
+
+func (v *NullableAgentUploadRequest) Unset() {
+	v.value = nil
+	v.isSet = false
+}
+
+func NewNullableAgentUploadRequest(val *AgentUploadRequest) *NullableAgentUploadRequest {
+	return &NullableAgentUploadRequest{value: val, isSet: true}
+}
+
+func (v NullableAgentUploadRequest) MarshalJSON() ([]byte, error) {
+	return json.Marshal(v.value)
+}
+
+func (v *NullableAgentUploadRequest) UnmarshalJSON(src []byte) error {
+	v.isSet = true
+	return json.Unmarshal(src, &v.value)
+}
