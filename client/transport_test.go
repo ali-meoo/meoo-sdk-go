@@ -1,12 +1,7 @@
 /*
- * Meoo Open API Go SDK —— package client 测试。
+ * Meoo Open API Go SDK — 传输层测试。
  *
- * 镜像 Java com.meoo.runtime.TransportTest：认证头、每请求动态取凭证、幂等与有限重试、错误
- * 分层（runtime-spec/{auth,retry,streaming}.md）。Java 的 requestAsync 两个用例在 Go 不适用
- * ——Go 用 goroutine + context 表达并发/取消，没有独立的 async 方法，故略去。
- *
- * SSE 在 Java 由生成 api 层以 InputStream 交付，其契约测试在 SdkContractTest；Go facade 走
- * Transport.Stream + EventStream，故这里补充 stream 的用例。
+ * 覆盖：认证头、每请求动态取凭证、幂等与有限重试、错误分层，以及 SSE Stream。
  */
 
 package client
@@ -23,7 +18,7 @@ import (
 
 const testToken = "test-token"
 
-// recordingBackoff 记录默认退避算出的等待时长，但返回 0，避免测试真实等待（等价 Java 的注入式 Backoff）。
+// recordingBackoff 记录默认退避算出的等待时长，但返回 0，避免测试真实等待。
 func recordingBackoff(recorded *[]time.Duration) Backoff {
 	return func(attempt int, retryAfter []string) time.Duration {
 		delay := ExponentialBackoff(attempt, retryAfter)
@@ -123,7 +118,7 @@ func TestCredentialProviderIsConsultedPerRequest(t *testing.T) {
 	if len(requests) != 2 {
 		t.Fatalf("recorded %d requests, want 2", len(requests))
 	}
-	// auth.md 第 2 条：凭证每次请求动态取值
+	// 凭证每次请求动态取值
 	if got := requests[0].headerValue("Authorization"); got != "Bearer "+testToken+"-1" {
 		t.Errorf("first Authorization = %q, want %q", got, "Bearer "+testToken+"-1")
 	}
@@ -376,7 +371,7 @@ func TestStreamDeliversRawEventsOverHTTP(t *testing.T) {
 	if got := req.headerValue("Authorization"); got != "Bearer "+testToken {
 		t.Errorf("Authorization = %q, want %q", got, "Bearer "+testToken)
 	}
-	// streaming.md 第 1 条：SSE 认证只走 Header，凭证不得落进 query
+	// SSE 认证只走 Header，凭证不得落进 query
 	if req.query != "" {
 		t.Errorf("query = %q, want empty (credential must not be placed in the query)", req.query)
 	}

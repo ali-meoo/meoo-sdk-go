@@ -1,9 +1,5 @@
 /*
- * Meoo Open API Go SDK —— package client 测试。
- *
- * 镜像 Java com.meoo.runtime.SseTest，并与 sdks/python/tests/test_sse.py、
- * sdks/typescript/src/test/sse.test.ts 同题同解（runtime-spec/streaming.md）。共享 fixture
- * runtime-spec/fixtures/sse/basic.txt 必须解析出完全一致的三个事件。
+ * Meoo Open API Go SDK — SSE 帧解析测试。
  */
 
 package client
@@ -47,7 +43,7 @@ func TestParseSingleFrame(t *testing.T) {
 	}
 }
 
-func TestParseSharedCrossLanguageFixture(t *testing.T) {
+func TestParseSharedFixture(t *testing.T) {
 	events, err := ParseStream(readFixture(t, "sse/basic.txt"))
 	if err != nil {
 		t.Fatalf("ParseStream returned error: %v", err)
@@ -78,7 +74,7 @@ func TestParseSharedCrossLanguageFixture(t *testing.T) {
 }
 
 func TestIgnoresHeartbeatCommentsAndKeepsUnknownEvents(t *testing.T) {
-	// heartbeat 用 SSE 注释帧承载；未知事件名不得导致流失败（契约前向兼容条款）
+	// heartbeat 用 SSE 注释帧承载；未知事件名不得导致流失败（前向兼容）
 	events, err := ParseStream(": heartbeat\n\nevent: run.some_future_event\ndata: {\"run_id\":\"r1\"}\n\n")
 	if err != nil {
 		t.Fatalf("ParseStream returned error: %v", err)
@@ -146,7 +142,7 @@ func TestMapsEventDataToModels(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseFrame returned error: %v", err)
 	}
-	// 用局部结构映射，避免耦合生成模型的 Go 字段名（生成层字段随 generator 版本可能变化）
+	// 用局部结构映射，避免耦合模型的 Go 字段名
 	var data struct {
 		RunID  string `json:"run_id"`
 		Status string `json:"status"`

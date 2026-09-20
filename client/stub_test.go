@@ -1,12 +1,10 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package client）测试基础设施。
+ * Meoo Open API Go SDK — 测试基础设施。
  *
- * 等价于 Java com.meoo.testing.StubServer 与 com.meoo.testing.Fixtures：
  *   - stubServer 基于 net/http/httptest，走真实 TCP 与真实 *http.Client，避免为测试引入依赖，
  *     记录到达的请求（method / 原始路径 / 原始查询串 / 头 / 体），并可返回 JSON、空体、
  *     任意 Content-Type 或分块 flush 的 SSE 响应；
- *   - fixture 从测试工作目录向上查找仓库根下的 runtime-spec/fixtures/<relative>，与三语言
- *     共用同一份跨语言 fixture（同题同解）。
+ *   - fixture 从测试工作目录向上查找共享 fixtures 目录。
  *
  * 这些测试与被测代码同属 package client（内部测试），以便直接断言未导出的 encodeSegment、
  * newClientOptions、newAPIError、newEventStream 等实现细节。
@@ -25,7 +23,7 @@ import (
 	"testing"
 )
 
-// recordedRequest 是一次到达打桩服务的请求快照（等价 Java StubServer.Request）。
+// recordedRequest 是一次到达打桩服务的请求快照。
 type recordedRequest struct {
 	method string
 	path   string // 原始（仍编码的）路径，便于直接断言百分号编码结果
@@ -43,8 +41,7 @@ func (r recordedRequest) queryParam(name string) (string, bool) {
 	return v, ok
 }
 
-// stubResponse 是打桩响应（等价 Java StubServer.Response）。chunks 非空时按块 flush，
-// 模拟 SSE 服务端持续推送。
+// stubResponse 是打桩响应。chunks 非空时按块 flush，模拟 SSE 服务端持续推送。
 type stubResponse struct {
 	status int
 	header http.Header
@@ -99,7 +96,7 @@ func (r stubResponse) withHeader(name, value string) stubResponse {
 	return r
 }
 
-// stubServer 是基于 httptest 的打桩服务（等价 Java com.meoo.testing.StubServer）。
+// stubServer 是基于 httptest 的打桩服务。
 type stubServer struct {
 	server   *httptest.Server
 	handler  func(recordedRequest) stubResponse
@@ -183,13 +180,11 @@ func parseRawQuery(query string) map[string]string {
 	return values
 }
 
-// fixturePath 从当前工作目录向上查找仓库根，定位 runtime-spec/fixtures/<relative>，
-// 避免测试依赖 go test 的工作目录（等价 Java Fixtures.path）。
+// fixturePath 从当前工作目录向上查找，定位共享 fixtures 目录下的 <relative>，避免测试
+// 依赖 go test 的工作目录。
 //
-// 独立发布仓（meoo-sdk-go）是 monorepo sdks/go/ 的镜像，不含跨语言共享的 runtime-spec
-// fixture：此时向上查找根本遇不到 runtime-spec 目录，说明不在源 monorepo，用 t.Skip 跳过
-// （该用例由源 monorepo CI 覆盖），而非让独立仓 go test 直接失败。若找到了 runtime-spec
-// 却缺具体 fixture，则是真缺陷，仍按 t.Fatal 处理。
+// 若向上查找遇不到共享 fixtures 目录（例如本模块未随附该目录），用 t.Skip 跳过对应用例；
+// 若找到了目录却缺具体 fixture，则是真缺陷，仍按 t.Fatal 处理。
 func fixturePath(t *testing.T, relative string) string {
 	t.Helper()
 	dir, err := os.Getwd()
@@ -198,7 +193,7 @@ func fixturePath(t *testing.T, relative string) string {
 	}
 	sawRuntimeSpec := false
 	for {
-		fixturesDir := filepath.Join(dir, "runtime-spec", "fixtures")
+		fixturesDir := filepath.Join(dir, "testdata", "fixtures")
 		candidate := filepath.Join(fixturesDir, filepath.FromSlash(relative))
 		if info, statErr := os.Stat(candidate); statErr == nil && !info.IsDir() {
 			return candidate
@@ -213,13 +208,13 @@ func fixturePath(t *testing.T, relative string) string {
 		dir = parent
 	}
 	if !sawRuntimeSpec {
-		t.Skipf("跨语言共享 fixture runtime-spec/fixtures/%s 不在场（独立发布仓镜像，非源 monorepo）；该用例由源 monorepo CI 覆盖", relative)
+		t.Skipf("shared fixture %s not present in this module; skipping", relative)
 	}
-	t.Fatalf("runtime-spec fixture not found: %s", relative)
+	t.Fatalf("testdata fixture not found: %s", relative)
 	return ""
 }
 
-// readFixture 读取共享 fixture 文本（等价 Java Fixtures.read）。
+// readFixture 读取共享 fixture 文本。
 func readFixture(t *testing.T, relative string) string {
 	t.Helper()
 	content, err := os.ReadFile(fixturePath(t, relative))

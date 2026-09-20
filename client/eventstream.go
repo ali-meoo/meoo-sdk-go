@@ -1,12 +1,11 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
+ * Meoo Open API Go SDK — 同步 SSE 事件流。
  *
- * 同步 SSE 事件流：按行惰性读取，收到契约声明的终态事件或流结束后 Next 返回 io.EOF，
- * 且不做重连（runtime-spec/streaming.md 第 5、6 条）。对齐 Java com.meoo.runtime.EventStream
- * （Iterator + AutoCloseable），Go 侧改用 sql.Rows / bufio.Scanner 风格的 Next()/Close()。
+ * 按行惰性读取，收到终态事件或流结束后 Next 返回 io.EOF，且不做重连。用法为 sql.Rows
+ * 风格的 Next()/Close()。
  *
- * 用 bufio.Reader 而非 bufio.Scanner：Scanner 单行默认上限 64KB，会截断较大的
- * message.snapshot 帧；Reader.ReadString 无此限制，与 Java BufferedReader.readLine 一致。
+ * 用 bufio.Reader 而非 bufio.Scanner：Scanner 单行默认上限 64KB，会截断较大的 message.snapshot
+ * 帧；Reader.ReadString 无此限制。
  */
 
 package client
@@ -17,7 +16,7 @@ import (
 	"strings"
 )
 
-// terminalEvents 取自契约 AgentRunEvent 判别式映射里的终态与 superseded 事件。
+// terminalEvents 是终态与 superseded 事件名。
 var terminalEvents = map[string]struct{}{
 	"run.completed":   {},
 	"run.failed":      {},
@@ -26,7 +25,7 @@ var terminalEvents = map[string]struct{}{
 	"run.superseded":  {},
 }
 
-// IsTerminalEvent 判断事件名是否为契约声明的终态事件；未知事件名一律视为非终态。
+// IsTerminalEvent 判断事件名是否为终态事件；未知事件名一律视为非终态。
 func IsTerminalEvent(event string) bool {
 	_, ok := terminalEvents[event]
 	return ok

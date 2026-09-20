@@ -1,10 +1,9 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
+ * Meoo Open API Go SDK — SSE 帧解析。
  *
- * SSE 帧解析（runtime-spec/streaming.md），与 Java com.meoo.runtime.Sse、Python
- * meoo/runtime/sse.py、TypeScript runtime/sse.ts 逐条对齐：忽略注释帧（heartbeat 用注释帧承载）
- * 与空行、按首个冒号分割字段、值只去掉一个前导空格、多行 data 以 "\n" 拼接、默认事件名 message、
- * 没有 data 的帧丢弃、data 非法 JSON 时报错。
+ * 按 SSE 规范解析事件帧：忽略注释帧（heartbeat 用注释帧承载）与空行、按首个冒号分割字段、
+ * 字段值只去掉一个前导空格、多行 data 以 "\n" 拼接、默认事件名 message、没有 data 的帧丢弃、
+ * data 非法 JSON 时报错。
  */
 
 package client
@@ -53,7 +52,7 @@ func ParseFrame(frame string) (*AgentEvent, error) {
 	return &AgentEvent{ID: id, Event: event, Data: json.RawMessage(raw)}, nil
 }
 
-// ParseStream 解析完整响应体或 fixture 文本，按空行分帧，返回全部事件。
+// ParseStream 解析完整响应体文本，按空行分帧，返回全部事件。
 func ParseStream(body string) ([]*AgentEvent, error) {
 	return ParseLines(strings.Split(body, "\n"))
 }

@@ -1,9 +1,8 @@
 /*
- * Meoo Open API Go SDK —— package client 测试。
+ * Meoo Open API Go SDK — 同步 SSE 事件流测试。
  *
- * 验证同步 SSE 事件流语义（runtime-spec/streaming.md 第 5、6 条）：按行惰性交付、收到契约终态
- * 事件后 Next 返回 io.EOF 且不再重连、流自然结束返回 io.EOF、非法 data 透出解析错误、Close
- * 幂等。等价于 Java com.meoo.runtime.EventStream 的 Iterator + AutoCloseable 行为。
+ * 验证：按行惰性交付、收到终态事件后 Next 返回 io.EOF 且不再重连、流自然结束返回 io.EOF、
+ * 非法 data 透出解析错误、Close 幂等。
  */
 
 package client

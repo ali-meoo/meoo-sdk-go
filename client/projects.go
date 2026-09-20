@@ -1,12 +1,11 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
+ * Meoo Open API Go SDK — 项目资源。
  *
- * 项目资源，语义对齐 Java com.meoo.runtime.ProjectsResource 与 TypeScript ProjectsResource。
- * facade 只封装最高频的 operation；其余 operation 可用 Client.Generated() 的生成客户端，
- * 或 Client.Transport() 直接发请求。
+ * Projects() 封装最高频的项目 operation；其余 operation 可用 Client.Generated() 的完整 API
+ * 客户端，或 Client.Transport() 直接发请求。
  *
- * 仅复用契约模型的「类型」（Project），不引用其 Go 字段名——列表信封用局部
- * 结构 + 显式 json tag 解码，从而把「底层模型字段命名变化」的编译期风险降到最低。
+ * 列表信封用局部结构 + 显式 json tag 解码，只依赖响应的 JSON 字段名，把底层模型字段命名
+ * 变化的编译期风险降到最低。
  */
 
 package client
@@ -17,7 +16,7 @@ import (
 	"strconv"
 )
 
-// projectsCollectionPath 取自契约的项目集合路径。
+// projectsCollectionPath 是项目集合路径。
 const projectsCollectionPath = "/open/v1/projects"
 
 // ProjectsResource 封装项目相关的高频 operation。
@@ -29,9 +28,9 @@ func newProjectsResource(transport *Transport) *ProjectsResource {
 	return &ProjectsResource{transport: transport}
 }
 
-// CreateProjectParams 是创建项目的入参，对应契约 ProjectCreateRequest。
+// CreateProjectParams 是创建项目的入参，对应 ProjectCreateRequest。
 type CreateProjectParams struct {
-	// Name 项目名（契约要求长度 1..100 且含非空白字符）。
+	// Name 项目名（长度 1..100 且含非空白字符）。
 	Name string
 	// Type 项目类型：web、app 或 miniprogram；留空则不发送该字段，由服务端按默认 web 处理。
 	Type string
@@ -78,7 +77,7 @@ func (r *ProjectsResource) List(ctx context.Context, params ListProjectsParams, 
 		return nil, err
 	}
 
-	// 局部信封结构：只依赖契约的 JSON 字段名，不依赖生成模型的 Go 字段名。
+	// 局部信封结构：只依赖响应的 JSON 字段名。
 	var envelope struct {
 		Projects      []Project `json:"projects"`
 		NextPageToken *string   `json:"next_page_token"`

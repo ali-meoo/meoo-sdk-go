@@ -2,7 +2,7 @@
 
 # Meoo Open API Go SDK
 
-Meoo 开放平台官方 Go SDK。**纯 Go 标准库实现，无任何第三方依赖**。提供并发安全的同步客户端，覆盖 Bearer / API Key 认证、统一错误分层、有限重试、项目分页与 Agent Run/SSE 事件流，并通过逃生舱客户端覆盖全部 **35 个** Open API operation。
+Meoo 开放平台官方 Go SDK。**仅用 Go 标准库实现，无任何第三方依赖。** 提供并发安全的同步客户端，覆盖 Bearer / API Key 认证、统一错误分层、有限重试、项目分页与 Agent Run/SSE 事件流，并通过完整客户端覆盖全部 **35 个** Open API operation。
 
 ## 环境要求
 
@@ -11,10 +11,8 @@ Meoo 开放平台官方 Go SDK。**纯 Go 标准库实现，无任何第三方�
 ## 安装
 
 ```sh
-go get gitlab.alibaba-inc.com/oneday/meoo-sdk-go/client
+go get github.com/ali-meoo/meoo-sdk-go/client
 ```
-
-> **内网私有 module**：消费方需设置 `GOPRIVATE=gitlab.alibaba-inc.com`（让 `go get` 跳过公共 proxy/sumdb 直连 VCS），并配置好 Git 凭证；若走 http 或自签证书，视情况再配 `GOINSECURE`。
 
 ## 快速开始
 
@@ -27,7 +25,7 @@ import (
 	"log"
 	"os"
 
-	meoo "gitlab.alibaba-inc.com/oneday/meoo-sdk-go/client"
+	meoo "github.com/ali-meoo/meoo-sdk-go/client"
 )
 
 func main() {
@@ -64,7 +62,7 @@ func main() {
 
 | 选项 | 说明 | 默认值 |
 |---|---|---|
-| `WithAPIKey(key string)` | 固定 API Key（`meoo_ak`），以 Bearer 承载 | — |
+| `WithAPIKey(key string)` | 固定 API Key，以 Bearer 承载 | — |
 | `WithAccessToken(token string)` | 固定 OAuth Access Token | — |
 | `WithCredentialProvider(p CredentialProvider)` | 动态凭证来源；OAuth refresh / 成员 Token 重签发的 single-flight 与缓存由实现方负责 | — |
 | `WithBaseURL(url string)` | 服务地址（末尾斜杠自动去除） | `https://meoo.com` |
@@ -77,7 +75,7 @@ func main() {
 
 ## 接口一览
 
-### 高层门面（推荐日常使用）
+### 高层资源（推荐日常使用）
 
 **`client.Projects()` — 项目**
 
@@ -96,9 +94,9 @@ func main() {
 | `Cancel` | `(ctx, projectID, runID string, *RequestOptions) (*AgentRun, error)` |
 | `Events` | `(ctx, projectID, runID string, *RequestOptions) (*EventStream, error)` — SSE 事件流 |
 
-### 全量 operation（`Generated()` 逃生舱）
+### 全量 operation（`Generated()`）
 
-门面只封装最高频的 operation；其余全部 operation 通过 `Generated()` 返回的 request-builder 客户端调用，覆盖 **12 组 35 个** operation。它与主客户端共享 `baseURL` 与 `*http.Client`，调用前先用 `Context(ctx)` 注入凭证：
+高层资源只封装最高频的 operation；其余全部 operation 通过 `Generated()` 返回的 request-builder 客户端调用，覆盖 **12 组 35 个** operation。它与主客户端共享 `baseURL` 与 `*http.Client`，调用前先用 `Context(ctx)` 注入凭证：
 
 ```go
 ctx, err := c.Context(context.Background())
@@ -126,11 +124,11 @@ if err != nil {
 | `SourceApi` | CreateCurrentProjectSourceExport |
 | `UserApi` | GetUser |
 
-所有请求 / 响应模型（如 `Project`、`AgentRun`、`CloudFunction`、`AgentMessageDeltaEventData`）都在 `client` 包内，直接以 `meoo.<类型名>` 使用，无需引入任何内部包。
+所有请求 / 响应模型（如 `Project`、`AgentRun`、`CloudFunction`、`AgentMessageDeltaEventData`）都在 `client` 包内，直接以 `meoo.<类型名>` 使用。
 
 ### 低层传输（`Transport()`）
 
-需要对未封装路径完全掌控时，用 `Transport()` 直接发请求，认证 / 超时 / 重试 / 错误语义与门面**完全一致**：
+需要对未封装路径完全掌控时，用 `Transport()` 直接发请求，认证 / 超时 / 重试 / 错误语义与高层资源**完全一致**：
 
 ```go
 raw, err := c.Transport().Request(ctx, "GET", "/open/v1/user", nil, nil)
@@ -138,7 +136,7 @@ raw, err := c.Transport().Request(ctx, "GET", "/open/v1/user", nil, nil)
 
 ## 消费 SSE 事件流
 
-`Agent().Events` 返回持有连接的 `*EventStream`，**必须 `Close`**（通常 `defer`）。逐行惰性解析；收到契约声明的终态事件（`run.completed`、`run.failed`、`run.canceled`、`run.interrupted`、`run.superseded`）或流自然结束后，`Next` 返回 `io.EOF` 且不再重连：
+`Agent().Events` 返回持有连接的 `*EventStream`，**必须 `Close`**（通常 `defer`）。逐行惰性解析；收到终态事件（`run.completed`、`run.failed`、`run.canceled`、`run.interrupted`、`run.superseded`）或流自然结束后，`Next` 返回 `io.EOF` 且不再重连：
 
 ```go
 stream, err := c.Agent().Events(ctx, projectID, runID, nil)
@@ -167,7 +165,7 @@ for {
 		_ = event.DataAs(&terminal)
 		// 处理终态
 	}
-	// 契约要求忽略未知事件名：未知 event 原样透出、不报错
+	// 未知事件名原样透出、不会导致流失败。
 }
 ```
 
@@ -197,7 +195,7 @@ if errors.Is(err, context.Canceled) {
 }
 ```
 
-`APIError` 的 `problem` 不可解析时按 HTTP status 兜底（契约允许服务端新增错误码）；`TraceID` 缺失时回退到响应头 `X-Meoo-Trace-Id`。
+`APIError` 的 `problem` 不可解析时按 HTTP status 兜底（服务端可能新增错误码）；`TraceID` 缺失时回退到响应头 `X-Meoo-Trace-Id`。
 
 ## 分页
 
@@ -224,4 +222,4 @@ go vet ./...
 
 ## 许可证
 
-内部二方 SDK，许可证待定。
+待定；首个公开发布前会补充 `LICENSE` 文件。

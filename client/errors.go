@@ -1,11 +1,9 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package client，不由 OpenAPI Generator 产出）。
+ * Meoo Open API Go SDK — 统一错误分层。
  *
- * 统一错误分层，语义对齐 Java 的 com.meoo.runtime.errors 与 TypeScript/Python Runtime，
- * 并落实 runtime-spec 的错误约定：
  *   - TransportError：连接失败、超时、取消、请求体序列化或响应体解析失败；
  *   - APIError      ：服务端返回非 2xx，detail / code / trace_id 取自 RFC 7807 problem，
- *                     problem 不可解析时按 HTTP status 兜底（契约允许服务端新增错误码）；
+ *                     problem 不可解析时按 HTTP status 兜底（服务端可能新增错误码）；
  *   - meooError     ：其余 SDK 级错误（如 SSE 数据格式非法），仅通过 Error 接口对外暴露。
  *
  * 全部错误实现 Error 接口，可用 errors.As(err, &target) 判定具体类型；Unwrap 保留底层
@@ -20,8 +18,8 @@ import (
 	"strconv"
 )
 
-// Error 是 meoo 包所有错误的根接口。isMeooError 为未导出标记方法，将该接口封闭在本包内，
-// 外部无法伪造实现，从而保证「凡是 meoo.Error 都来自本 SDK」这一不变式。
+// Error 是本包所有错误的根接口。isMeooError 为未导出标记方法，将该接口封闭在本包内，
+// 外部无法伪造实现，从而保证「凡是本包的 Error 都来自本 SDK」这一不变式。
 type Error interface {
 	error
 	// Message 返回 SDK 层错误描述，不含被包装的底层 cause。
@@ -49,7 +47,6 @@ func (e *baseError) Error() string {
 }
 
 // TransportError 表示传输层错误：连接失败、超时、取消，以及请求/响应体的序列化反序列化失败。
-// 与 Java com.meoo.runtime.errors.TransportError、TypeScript TransportError 对齐。
 type TransportError struct{ baseError }
 
 func newTransportError(message string, cause error) *TransportError {
@@ -79,7 +76,7 @@ type APIError struct {
 	Headers http.Header
 }
 
-// newAPIError 由响应状态、响应头与原始响应体构造错误，逻辑对齐 Java ApiError.of。
+// newAPIError 由响应状态、响应头与原始响应体构造错误。
 func newAPIError(status int, headers http.Header, body []byte) *APIError {
 	var problem json.RawMessage
 	var fields map[string]json.RawMessage
@@ -109,8 +106,7 @@ func newAPIError(status int, headers http.Header, body []byte) *APIError {
 	}
 }
 
-// jsonString 取 problem 对象里的字符串字段；字段缺失或非字符串（对齐 Java 的 isTextual 判定）
-// 时返回空串。
+// jsonString 取 problem 对象里的字符串字段；字段缺失或非字符串时返回空串。
 func jsonString(fields map[string]json.RawMessage, key string) string {
 	if fields == nil {
 		return ""

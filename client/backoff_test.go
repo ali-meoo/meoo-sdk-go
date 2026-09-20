@@ -1,8 +1,5 @@
 /*
- * Meoo Open API Go SDK —— package client 测试。
- *
- * 镜像 Java com.meoo.runtime.BackoffTest：默认退避必须与 TypeScript retryDelay、Python
- * request 的等待时长完全一致（runtime-spec/retry.md）。断言逐条对应，改默认值前必须同步四语言。
+ * Meoo Open API Go SDK — 重试退避测试。
  */
 
 package client
@@ -48,7 +45,7 @@ func TestRetryAfterHeaderWins(t *testing.T) {
 }
 
 func TestUnsupportedRetryAfterFallsBackToExponential(t *testing.T) {
-	// HTTP-date 形式不解析，与 TypeScript 的 Number() 行为一致
+	// HTTP-date 形式不解析，退回指数退避
 	if got := ExponentialBackoff(0, []string{"Wed, 21 Oct 2015 07:28:00 GMT"}); got != 500*time.Millisecond {
 		t.Errorf("HTTP-date Retry-After should fall back to exponential, got %v, want %v", got, 500*time.Millisecond)
 	}

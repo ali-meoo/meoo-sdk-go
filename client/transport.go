@@ -1,15 +1,11 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
+ * Meoo Open API Go SDK — 传输层。
  *
- * 传输层：认证头、超时、有限重试、错误分层与 SSE，语义见 runtime-spec/{auth,retry,streaming}.md，
- * 与 Java com.meoo.runtime.Transport、TypeScript runtime/transport.ts 逐条对齐。生成客户端只负责
- * 普通 REST 请求与模型，facade 的全部网络行为都收敛在这里。Transport 实例并发安全，可跨 goroutine 复用。
+ * 认证头、超时、有限重试、错误分层与 SSE 流式请求都在这里实现；高层资源方法
+ * （Projects()/Agent()）只负责描述请求路径与出入参。Transport 实例并发安全，可跨 goroutine 复用。
  *
- * 与底层 API 客户端的关系：本层自带 *http.Client 与请求构建，不经过 APIClient，
- * 以便统一控制超时/重试/SSE/认证；只在 facade（projects.go / agent.go）里复用契约模型类型。
- *
- * 重试口径与 Java/TS 保持一致：仅对 429/502/503/504 且「可重试」的请求退避重试；连接失败/超时
- * 直接归为 *TransportError 不重试，避免四语言行为漂移。
+ * 重试口径：仅对 429/502/503/504 且「可重试」的请求退避重试；连接失败/超时直接归为
+ * *TransportError，不重试。
  */
 
 package client
@@ -23,7 +19,7 @@ import (
 	"time"
 )
 
-// retryableStatus 是默认允许重试的状态码（runtime-spec/retry.md）。
+// retryableStatus 是默认允许重试的状态码。
 var retryableStatus = map[int]struct{}{
 	http.StatusTooManyRequests:    {}, // 429
 	http.StatusBadGateway:         {}, // 502
@@ -31,7 +27,7 @@ var retryableStatus = map[int]struct{}{
 	http.StatusGatewayTimeout:     {}, // 504
 }
 
-// Transport 是手写传输层。
+// Transport 是负责认证、超时、重试与错误分层的传输层。
 type Transport struct {
 	httpClient  *http.Client
 	credentials CredentialProvider
@@ -105,11 +101,11 @@ func (t *Transport) Request(ctx context.Context, method, path string, body inter
 	}
 }
 
-// Stream 发起同步 SSE 请求：认证只走 Header、不把凭证放进 query（runtime-spec/streaming.md 第 1 条）。
+// Stream 发起同步 SSE 请求：认证只走 Header、不把凭证放进 query。
 // 返回的 *EventStream 持有连接，调用方必须 Close。非 2xx 返回 *APIError。
 //
 // 不对整条流施加 timeout（长连接会一直收事件）；响应头等待由默认 client 的 ResponseHeaderTimeout
-// 兜底，整体取消/deadline 交给调用方的 ctx（streaming.md 第 6 条）。
+// 兜底，整体取消/deadline 交给调用方的 ctx。
 func (t *Transport) Stream(ctx context.Context, path string, opts *RequestOptions) (*EventStream, error) {
 	options := opts.orDefault()
 	request, err := t.buildRequest(ctx, http.MethodGet, path, nil, options, "text/event-stream")
@@ -175,7 +171,7 @@ func (t *Transport) buildRequest(ctx context.Context, method, path string, body 
 		return nil, newTransportError("failed to build request", err)
 	}
 	request.Header.Set("Accept", accept)
-	// auth.md 第 1、2 条：Bearer 承载凭证，且每次请求动态取值。
+	// Bearer 承载凭证，且每次请求动态取值。
 	request.Header.Set("Authorization", "Bearer "+token)
 	if body != nil {
 		request.Header.Set("Content-Type", "application/json")
@@ -212,7 +208,7 @@ func decodeBody(status int, body []byte) (json.RawMessage, error) {
 	return json.RawMessage(body), nil
 }
 
-// sleepContext 等待 delay，期间响应 ctx 取消/超时（对齐 Java 可中断的 Thread.sleep）。
+// sleepContext 等待 delay，期间响应 ctx 取消/超时。
 func sleepContext(ctx context.Context, delay time.Duration) error {
 	if delay <= 0 {
 		select {

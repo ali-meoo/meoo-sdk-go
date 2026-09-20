@@ -1,10 +1,8 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
+ * Meoo Open API Go SDK — 客户端配置。
  *
- * 客户端级与单次请求级配置。默认值对齐 Java com.meoo.runtime.ClientOptions、TypeScript
- * ClientOptions 与 Python Meoo 构造参数：baseURL=https://meoo.com、timeout=30s、maxRetries=2、
- * backoff=ExponentialBackoff。Go 侧用函数式选项（functional options）替代 Java 的 Builder，
- * 校验分支与 Java 构造函数逐条对应。
+ * 客户端级与单次请求级配置，用函数式选项（functional options）构造。默认值：
+ * baseURL=https://meoo.com、timeout=30s、maxRetries=2、backoff=ExponentialBackoff。
  */
 
 package client
@@ -16,7 +14,7 @@ import (
 )
 
 const (
-	// DefaultBaseURL 是默认服务地址，与三语言 SDK 一致。
+	// DefaultBaseURL 是默认服务地址。
 	DefaultBaseURL = "https://meoo.com"
 	// DefaultTimeout 是普通请求的默认超时（不约束 SSE 长连接的整体时长）。
 	DefaultTimeout = 30 * time.Second
@@ -34,7 +32,7 @@ type ClientOptions struct {
 	backoff     Backoff
 
 	// staticToken / isStatic 用于区分固定凭证（WithAPIKey / WithAccessToken）与动态 Provider，
-	// 以便像 Java CredentialProvider.of 那样对空固定凭证提前报错。
+	// 以便对空的固定凭证提前报错。
 	staticToken string
 	isStatic    bool
 }
@@ -105,7 +103,7 @@ func newClientOptions(opts ...Option) (*ClientOptions, error) {
 		}
 	}
 
-	// 以下四个分支与 Java ClientOptions 构造函数的 IllegalArgumentException 一一对应。
+	// 以下校验分支在参数非法时返回错误。
 	if o.credentials == nil {
 		return nil, newMeooError("apiKey, accessToken or credentialProvider is required", nil)
 	}
@@ -125,16 +123,14 @@ func newClientOptions(opts ...Option) (*ClientOptions, error) {
 	if o.backoff == nil {
 		o.backoff = ExponentialBackoff
 	}
-	// 去掉末尾斜杠，避免与以 "/" 开头的 path 拼出 "//"（与 Java/TS 一致）。
+	// 去掉末尾斜杠，避免与以 "/" 开头的 path 拼出 "//"。
 	o.baseURL = strings.TrimRight(o.baseURL, "/")
 	return o, nil
 }
 
-// RequestOptions 是单次请求的覆盖项。零值（或传 nil）表示沿用客户端默认或按方法自动推断，
-// 语义对齐 Java com.meoo.runtime.RequestOptions 与 TypeScript RequestOptions。
+// RequestOptions 是单次请求的覆盖项。零值（或传 nil）表示沿用客户端默认或按方法自动推断。
 type RequestOptions struct {
-	// IdempotencyKey 非空时写入 Idempotency-Key 头；写请求只有携带同一键才允许自动重试
-	// （runtime-spec/retry.md）。
+	// IdempotencyKey 非空时写入 Idempotency-Key 头；写请求只有携带同一键才允许自动重试。
 	IdempotencyKey string
 	// Timeout > 0 时覆盖客户端默认超时，仅对本次普通请求生效。
 	Timeout time.Duration

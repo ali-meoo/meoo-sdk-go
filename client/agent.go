@@ -1,8 +1,7 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
+ * Meoo Open API Go SDK — Agent Run 资源。
  *
- * Agent Run 资源，语义对齐 Java com.meoo.runtime.AgentResource 与 TypeScript AgentResource。
- * Events 返回的 *EventStream 持有连接，必须 Close。仅复用 AgentRun 类型，不引用其字段名。
+ * Agent() 封装 Agent Run 的高频 operation。Events 返回的 *EventStream 持有连接，必须 Close。
  */
 
 package client
@@ -21,8 +20,8 @@ func newAgentResource(transport *Transport) *AgentResource {
 	return &AgentResource{transport: transport}
 }
 
-// Start 启动一个 Run；input 可以是 map[string]interface{} 或生成的请求模型
-// （例如 AgentRunStartRequest）。不携带 conversation_id 时由服务端隐式创建会话。
+// Start 启动一个 Run；input 可以是 map[string]interface{} 或请求模型（例如
+// AgentRunStartRequest）。不携带 conversation_id 时由服务端隐式创建会话。
 func (r *AgentResource) Start(ctx context.Context, projectID string, input interface{}, opts *RequestOptions) (*AgentRun, error) {
 	raw, err := r.transport.Request(ctx, "POST", runsPath(projectID), input, opts)
 	if err != nil {
@@ -31,7 +30,7 @@ func (r *AgentResource) Start(ctx context.Context, projectID string, input inter
 	return decodeAgentRun(raw)
 }
 
-// Current 返回当前活跃 Run；没有活跃 Run 时返回最近一次终态 Run（契约行为，调用方无需区分）。
+// Current 返回当前活跃 Run；没有活跃 Run 时返回最近一次终态 Run（调用方无需区分）。
 func (r *AgentResource) Current(ctx context.Context, projectID string, opts *RequestOptions) (*AgentRun, error) {
 	raw, err := r.transport.Request(ctx, "GET", runsPath(projectID)+"/current", nil, opts)
 	if err != nil {
@@ -40,8 +39,7 @@ func (r *AgentResource) Current(ctx context.Context, projectID string, opts *Req
 	return decodeAgentRun(raw)
 }
 
-// Cancel 取消指定 Run；契约未声明请求体，因此不发送 body（与生成的 AgentRunsApi 一致）；
-// 已是 canceled 时幂等返回 200。
+// Cancel 取消指定 Run；该接口不发送请求体；已是 canceled 时幂等返回 200。
 func (r *AgentResource) Cancel(ctx context.Context, projectID, runID string, opts *RequestOptions) (*AgentRun, error) {
 	path := runsPath(projectID) + "/" + encodeSegment(runID) + "/cancellations"
 	raw, err := r.transport.Request(ctx, "POST", path, nil, opts)
@@ -51,7 +49,7 @@ func (r *AgentResource) Cancel(ctx context.Context, projectID, runID string, opt
 	return decodeAgentRun(raw)
 }
 
-// Events 打开 Run 的 SSE 事件流（runtime-spec/streaming.md）；返回的 *EventStream 必须 Close。
+// Events 打开 Run 的 SSE 事件流；返回的 *EventStream 必须 Close。
 func (r *AgentResource) Events(ctx context.Context, projectID, runID string, opts *RequestOptions) (*EventStream, error) {
 	path := runsPath(projectID) + "/" + encodeSegment(runID) + "/events"
 	return r.transport.Stream(ctx, path, opts)

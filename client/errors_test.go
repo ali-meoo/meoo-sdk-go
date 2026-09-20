@@ -1,10 +1,7 @@
 /*
- * Meoo Open API Go SDK —— package client 测试。
+ * Meoo Open API Go SDK — 错误分层测试。
  *
- * 镜像 Java TransportTest 里对 ApiError 的断言（surfacesApiErrorAfterRetriesAreExhausted、
- * fallsBackToTraceIdHeaderAndStatusMessage），并直接验证错误分层与 errors.As/Is 语义
- * （runtime-spec/auth.md 的错误约定）。这些用例在 Java 里经由 Transport 间接触发，这里直接
- * 断言 newAPIError，把「problem 解析」与「传输重试」两个关注点解耦。
+ * 直接断言 newAPIError，把「problem 解析」与「传输重试」两个关注点解耦，并验证 errors.As/Is 语义。
  */
 
 package client
@@ -68,7 +65,7 @@ func TestNewAPIErrorFallsBackToTraceHeaderAndStatusMessage(t *testing.T) {
 }
 
 func TestNewAPIErrorIgnoresNonStringDetail(t *testing.T) {
-	// detail 非字符串（对齐 Java isTextual 判定）时不采用，退回 status 兜底
+	// detail 非字符串时不采用，退回 status 兜底
 	err := newAPIError(400, nil, []byte(`{"detail":{"nested":"object"}}`))
 	if err.Message() != "HTTP 400" {
 		t.Errorf("Message() = %q, want %q", err.Message(), "HTTP 400")

@@ -1,25 +1,21 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
+ * Meoo Open API Go SDK — 同步公共客户端。
  *
- * 同步公共入口，等价于 TypeScript 的 MeooClient、Java 的 Meoo 与 Python 的 Meoo：认证、统一错误、
- * 有限重试、分页和 SSE 由手写 Runtime 负责，业务模型直接复用契约模型类型。
- *
- * 两层协作：
- *   - facade（Projects()/Agent()）覆盖最高频 operation，网络行为收敛在 Transport；
- *   - Generated() 暴露与本客户端共享 baseURL 与 *http.Client 的生成客户端，覆盖全部 35 个
- *     operation；凭证通过 Context(ctx) 注入到每次调用的 ctx（生成层用 ContextAccessToken 承载 Bearer）。
+ * Client 是 SDK 的主入口：认证、统一错误分层、有限重试、分页与 SSE 都由它统一负责。高频操作
+ * 通过 Projects()/Agent() 调用；Generated() 返回覆盖全部 operation 的完整 API 客户端。Client
+ * 实例并发安全，可跨 goroutine 复用。
  *
  * 用法：
  *
- *	client, err := meoo.NewClient(meoo.WithAPIKey(os.Getenv("MEOO_API_KEY")))
+ *	c, err := meoo.NewClient(meoo.WithAPIKey(os.Getenv("MEOO_API_KEY")))
  *	if err != nil {
  *	    log.Fatal(err)
  *	}
- *	defer client.Close()
+ *	defer c.Close()
  *
- *	it := client.Projects().Iter(context.Background(), meoo.ListProjectsParams{}, nil)
+ *	it := c.Projects().Iter(context.Background(), meoo.ListProjectsParams{}, nil)
  *	for it.Next() {
- *	    fmt.Println(it.Item())
+ *	    fmt.Println(it.Item().Name)
  *	}
  */
 
@@ -71,19 +67,19 @@ func (c *Client) Projects() *ProjectsResource { return c.projects }
 // Agent 返回 Agent Run 资源。
 func (c *Client) Agent() *AgentResource { return c.agent }
 
-// Transport 返回低层传输出口：直接发请求，认证、重试与错误语义和 facade 完全一致。
+// Transport 返回低层传输入口：直接发请求，认证、重试与错误语义和高层方法完全一致。
 func (c *Client) Transport() *Transport { return c.transport }
 
-// Generated 返回与本客户端共享 baseURL 与 *http.Client 的生成客户端，用于 facade 未封装的
-// operation。调用前先用 Context 注入凭证：
+// Generated 返回与本客户端共享 baseURL 与 *http.Client 的完整 API 客户端，覆盖 Projects()/Agent()
+// 未封装的全部 operation。调用前先用 Context 注入凭证：
 //
-//	ctx, err := client.Context(context.Background())
+//	ctx, err := c.Context(context.Background())
 //	if err != nil { return err }
-//	user, _, err := client.Generated().UserApi.GetUser(ctx).Execute()
+//	user, _, err := c.Generated().UserApi.GetUser(ctx).Execute()
 func (c *Client) Generated() *APIClient { return c.generated }
 
-// Context 在 ctx 上注入当前 Bearer 凭证（ContextAccessToken），供 Generated() 的生成
-// 客户端使用；凭证动态取值失败返回 *TransportError。
+// Context 在 ctx 上注入当前 Bearer 凭证，供 Generated() 返回的 API 客户端使用；凭证动态取值失败
+// 返回 *TransportError。
 func (c *Client) Context(ctx context.Context) (context.Context, error) {
 	token, err := c.options.credentials.Token(ctx)
 	if err != nil {
@@ -99,12 +95,12 @@ func (c *Client) Close() {
 	}
 }
 
-// newGeneratedClient 用相同的 baseURL 与 *http.Client 构造生成客户端：覆写 server 列表为 baseURL，
-// 使生成层与 facade 指向同一环境；不设 Host/Scheme，交由 server URL 决定。
+// newGeneratedClient 用相同的 baseURL 与 *http.Client 构造底层 API 客户端：覆写 server 列表为
+// baseURL，使其与高层方法指向同一环境；不设 Host/Scheme，交由 server URL 决定。
 func newGeneratedClient(options *ClientOptions) *APIClient {
 	cfg := NewConfiguration()
 	cfg.HTTPClient = options.httpClient
-	cfg.UserAgent = "meoo-open-sdk/go"
+	cfg.UserAgent = "meoo-sdk-go"
 	cfg.Servers = ServerConfigurations{
 		{URL: options.baseURL, Description: "meoo client base URL"},
 	}

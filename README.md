@@ -2,10 +2,11 @@ English | [简体中文](README-CN.md)
 
 # Meoo Open API Go SDK
 
-Official Go SDK for the Meoo Open API. **Pure Go standard library — no third-party
-dependencies.** Provides a concurrency-safe synchronous client covering Bearer / API-Key
-auth, a unified error taxonomy, bounded retries, project pagination and Agent Run/SSE
-streaming, plus an escape-hatch client that reaches all **35** Open API operations.
+The official Go SDK for the Meoo Open API. Written with the **Go standard library only —
+no third-party dependencies.** It provides a concurrency-safe synchronous client covering
+Bearer / API-Key authentication, a unified error taxonomy, bounded retries, project
+pagination, and Agent Run/SSE streaming, plus a full client that reaches every one of the
+**35** Open API operations.
 
 ## Requirements
 
@@ -14,12 +15,8 @@ streaming, plus an escape-hatch client that reaches all **35** Open API operatio
 ## Installation
 
 ```sh
-go get gitlab.alibaba-inc.com/oneday/meoo-sdk-go/client
+go get github.com/ali-meoo/meoo-sdk-go/client
 ```
-
-> **Internal private module:** consumers must set `GOPRIVATE=gitlab.alibaba-inc.com`
-> (so `go get` bypasses the public proxy/sumdb and fetches directly from VCS) and have
-> Git credentials configured. Add `GOINSECURE` as needed for http or self-signed certs.
 
 ## Quick start
 
@@ -32,12 +29,12 @@ import (
 	"log"
 	"os"
 
-	meoo "gitlab.alibaba-inc.com/oneday/meoo-sdk-go/client"
+	meoo "github.com/ali-meoo/meoo-sdk-go/client"
 )
 
 func main() {
 	// The package is named client, which collides with a common local variable name,
-	// so examples import it under the alias meoo.
+	// so this example imports it under the alias meoo.
 	c, err := meoo.NewClient(meoo.WithAPIKey(os.Getenv("MEOO_API_KEY")))
 	if err != nil {
 		log.Fatal(err)
@@ -70,9 +67,9 @@ func main() {
 
 | Option | Purpose | Default |
 |---|---|---|
-| `WithAPIKey(key string)` | Static API Key (`meoo_ak`), sent as Bearer | — |
+| `WithAPIKey(key string)` | Static API key, sent as a Bearer credential | — |
 | `WithAccessToken(token string)` | Static OAuth access token | — |
-| `WithCredentialProvider(p CredentialProvider)` | Dynamic credential source; single-flight & caching for OAuth refresh / member-token reissue are the caller's responsibility | — |
+| `WithCredentialProvider(p CredentialProvider)` | Dynamic credential source; single-flight & caching for OAuth refresh / token reissue are the caller's responsibility | — |
 | `WithBaseURL(url string)` | Service base URL (trailing slash trimmed) | `https://meoo.com` |
 | `WithTimeout(d time.Duration)` | Per-request timeout for normal calls (does not bound SSE streams) | `30s` |
 | `WithMaxRetries(n int)` | Max retries (excluding the first attempt) | `2` |
@@ -85,7 +82,7 @@ release idle connections.
 
 ## API surface
 
-### High-level facade (recommended)
+### High-level resources (recommended)
 
 **`client.Projects()`**
 
@@ -104,10 +101,10 @@ release idle connections.
 | `Cancel` | `(ctx, projectID, runID string, *RequestOptions) (*AgentRun, error)` |
 | `Events` | `(ctx, projectID, runID string, *RequestOptions) (*EventStream, error)` — SSE stream |
 
-### All operations (`Generated()` escape hatch)
+### Every operation (`Generated()`)
 
-The facade wraps only the most frequent operations. Everything else is reachable through
-the request-builder client returned by `Generated()`, covering **12 groups / 35
+The high-level resources wrap the most frequent operations. Everything else is reachable
+through the request-builder client returned by `Generated()`, covering **12 groups / 35
 operations**. It shares the base URL and `*http.Client` with the main client; inject
 credentials first via `Context(ctx)`:
 
@@ -139,12 +136,12 @@ if err != nil {
 
 Every request/response model (e.g. `Project`, `AgentRun`, `CloudFunction`,
 `AgentMessageDeltaEventData`) lives in the `client` package — use it directly as
-`meoo.<Type>`; no internal package import is required.
+`meoo.<Type>`.
 
 ### Low-level transport (`Transport()`)
 
 For full control over an unwrapped path, call `Transport()` directly. Auth, timeout,
-retry and error semantics are **identical** to the facade:
+retry, and error semantics are **identical** to the high-level resources:
 
 ```go
 raw, err := c.Transport().Request(ctx, "GET", "/open/v1/user", nil, nil)
@@ -153,10 +150,9 @@ raw, err := c.Transport().Request(ctx, "GET", "/open/v1/user", nil, nil)
 ## Consuming SSE streams
 
 `Agent().Events` returns a connection-holding `*EventStream` that **must be closed**
-(usually via `defer`). Frames are parsed lazily line by line. After a contract-defined
-terminal event (`run.completed`, `run.failed`, `run.canceled`, `run.interrupted`,
-`run.superseded`) or a natural end of stream, `Next` returns `io.EOF` and never
-reconnects:
+(usually via `defer`). Frames are parsed lazily line by line. After a terminal event
+(`run.completed`, `run.failed`, `run.canceled`, `run.interrupted`, `run.superseded`) or a
+natural end of stream, `Next` returns `io.EOF` and never reconnects:
 
 ```go
 stream, err := c.Agent().Events(ctx, projectID, runID, nil)
@@ -185,7 +181,7 @@ for {
 		_ = event.DataAs(&terminal)
 		// handle terminal state
 	}
-	// The contract requires ignoring unknown event names: they are passed through as-is.
+	// Unknown event names are passed through as-is and never fail the stream.
 }
 ```
 
@@ -218,8 +214,8 @@ if errors.Is(err, context.Canceled) {
 }
 ```
 
-When `problem` cannot be parsed, `APIError` falls back to the HTTP status (the contract
-allows the server to add new error codes); when `TraceID` is absent it falls back to the
+When `problem` cannot be parsed, `APIError` falls back to the HTTP status (the server may
+introduce new error codes); when `TraceID` is absent it falls back to the
 `X-Meoo-Trace-Id` response header.
 
 ## Pagination
@@ -229,7 +225,7 @@ whether more pages remain. The `ProjectIterator` from `Iter` manages the cursor 
 `sql.Rows`-style: `for it.Next() { it.Item() }`, then `it.Err()`. The iterator is **not**
 concurrency-safe and should be driven by a single goroutine.
 
-## Auth & retries
+## Authentication & retries
 
 - **Auth:** `Authorization: Bearer <credential>`, resolved **per request**
   (`CredentialProvider.Token`). Static credentials via `WithAPIKey` / `WithAccessToken`;
@@ -237,7 +233,7 @@ concurrency-safe and should be driven by a single goroutine.
   + `CredentialProviderFunc` — single-flight and caching are the caller's job. SSE
   credentials go only in headers, never in the query string.
 - **Retries:** default `maxRetries=2`, backing off only on `429/502/503/504` for
-  "retryable" requests. GET/HEAD, or writes carrying an `IdempotencyKey`, are retryable;
+  retryable requests. GET/HEAD, or writes carrying an `IdempotencyKey`, are retryable;
   override per request with `RequestOptions.Retry` (use `client.Bool(...)`). Backoff is
   exponential (capped at 8s) and honors `Retry-After` first. Connect failures / timeouts
   become `*TransportError` and are not retried.
@@ -259,4 +255,4 @@ See [ChangeLog.txt](./ChangeLog.txt) for per-version changes.
 
 ## License
 
-Internal second-party SDK; license TBD.
+To be determined; a `LICENSE` file will be added before the first public release.

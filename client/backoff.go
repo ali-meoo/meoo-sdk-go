@@ -1,11 +1,8 @@
 /*
- * Meoo Open API Go SDK —— 手写高层 Runtime（package client）。
+ * Meoo Open API Go SDK — 重试退避策略。
  *
- * 重试等待策略，语义见 runtime-spec/retry.md，与 Java com.meoo.runtime.Backoff、
- * TypeScript retryDelay、Python Runtime 逐条对齐：Retry-After（秒）优先，否则
- * min(500ms * 2^attempt, 8s)。契约要求 SSE 的 429 在等待基础上增加抖动；需要时通过
- * WithBackoff 注入自定义实现，不要改默认值，否则三语言退避行为会漂移
- * （改默认值必须先改 runtime-spec 并同步 Java/TS/Python/Go 四语言）。
+ * Retry-After（秒）优先，否则按 min(500ms * 2^attempt, 8s) 指数退避。如需为特定场景
+ * （例如 SSE 的 429）叠加抖动，用 WithBackoff 注入自定义实现。
  */
 
 package client
@@ -20,8 +17,7 @@ import (
 // retryAfter 是响应的 Retry-After 头取值，可能为空。
 type Backoff func(attempt int, retryAfter []string) time.Duration
 
-// maxBackoffShift 限制指数增长的位移，避免 1<<attempt 在 attempt 很大时溢出；与 Java 的
-// Math.min(attempt, 20) 一致。
+// maxBackoffShift 限制指数增长的位移，避免 1<<attempt 在 attempt 很大时溢出。
 const maxBackoffShift = 20
 
 // ExponentialBackoff 是默认退避策略。
@@ -30,7 +26,7 @@ func ExponentialBackoff(attempt int, retryAfter []string) time.Duration {
 		if seconds, err := strconv.ParseFloat(strings.TrimSpace(retryAfter[0]), 64); err == nil && seconds >= 0 {
 			return time.Duration(seconds * float64(time.Second))
 		}
-		// HTTP-date 形式的 Retry-After 不解析，退回指数退避（与 Java/TypeScript 一致）。
+		// HTTP-date 形式的 Retry-After 不解析，退回指数退避。
 	}
 	shift := attempt
 	if shift < 0 {
