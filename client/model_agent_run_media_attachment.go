@@ -9,7 +9,7 @@ import (
 // checks if the AgentRunMediaAttachment type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &AgentRunMediaAttachment{}
 
-// AgentRunMediaAttachment kind 为 image 或 video 时不允许携带 filename 和 type 字段。
+// AgentRunMediaAttachment struct for AgentRunMediaAttachment
 type AgentRunMediaAttachment struct {
 	Kind string `json:"kind"`
 	// 可公开访问的 HTTP(S) 地址；服务端会拒绝本地、私网及链路本地地址。

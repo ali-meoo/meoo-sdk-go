@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// AgentRunStatus Run 状态；客户端遇到未知取值时一律视为非终态。
+// AgentRunStatus the model 'AgentRunStatus'
 type AgentRunStatus string
 
 // List of AgentRunStatus

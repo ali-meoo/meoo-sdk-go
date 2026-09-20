@@ -1,7 +1,6 @@
 package client
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -11,8 +10,9 @@ var _ MappedNullable = &AgentMessageSnapshotEvent{}
 
 // AgentMessageSnapshotEvent struct for AgentMessageSnapshotEvent
 type AgentMessageSnapshotEvent struct {
-	Event string                        `json:"event"`
-	Data  AgentMessageSnapshotEventData `json:"data"`
+	Event                string                        `json:"event"`
+	Data                 AgentMessageSnapshotEventData `json:"data"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _AgentMessageSnapshotEvent AgentMessageSnapshotEvent
@@ -96,6 +96,11 @@ func (o AgentMessageSnapshotEvent) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["event"] = o.Event
 	toSerialize["data"] = o.Data
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -124,14 +129,21 @@ func (o *AgentMessageSnapshotEvent) UnmarshalJSON(data []byte) (err error) {
 
 	varAgentMessageSnapshotEvent := _AgentMessageSnapshotEvent{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	err = decoder.Decode(&varAgentMessageSnapshotEvent)
+	err = json.Unmarshal(data, &varAgentMessageSnapshotEvent)
 
 	if err != nil {
 		return err
 	}
 
 	*o = AgentMessageSnapshotEvent(varAgentMessageSnapshotEvent)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "event")
+		delete(additionalProperties, "data")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

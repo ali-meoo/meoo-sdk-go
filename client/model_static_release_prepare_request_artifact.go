@@ -11,8 +11,9 @@ var _ MappedNullable = &StaticReleasePrepareRequestArtifact{}
 
 // StaticReleasePrepareRequestArtifact struct for StaticReleasePrepareRequestArtifact
 type StaticReleasePrepareRequestArtifact struct {
-	Type          string                                       `json:"type"`
-	Filename      string                                       `json:"filename" validate:"regexp=^[^\\/\\\\\\\\]+\\\\\\\\.zip$"`
+	Type string `json:"type"`
+	// 先去除首尾空白，再校验长度与 .zip 文件名格式（不区分大小写）。
+	Filename      string                                       `json:"filename" validate:"regexp=^[^\\/\\\\\\\\]+\\\\.zip$"`
 	ContentType   string                                       `json:"content_type"`
 	ContentLength int64                                        `json:"content_length"`
 	Checksum      *StaticReleasePrepareRequestArtifactChecksum `json:"checksum,omitempty"`

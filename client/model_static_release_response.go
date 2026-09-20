@@ -19,6 +19,7 @@ type StaticReleaseResponse struct {
 	Status       string         `json:"status"`
 	AccessUrl    NullableString `json:"access_url"`
 	PublishedAt  int64          `json:"published_at"`
+	ExpiresAt    NullableInt64  `json:"expires_at"`
 }
 
 type _StaticReleaseResponse StaticReleaseResponse
@@ -27,7 +28,7 @@ type _StaticReleaseResponse StaticReleaseResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStaticReleaseResponse(releaseId string, version int32, artifactId string, runtime string, artifactType string, status string, accessUrl NullableString, publishedAt int64) *StaticReleaseResponse {
+func NewStaticReleaseResponse(releaseId string, version int32, artifactId string, runtime string, artifactType string, status string, accessUrl NullableString, publishedAt int64, expiresAt NullableInt64) *StaticReleaseResponse {
 	this := StaticReleaseResponse{}
 	this.ReleaseId = releaseId
 	this.Version = version
@@ -37,6 +38,7 @@ func NewStaticReleaseResponse(releaseId string, version int32, artifactId string
 	this.Status = status
 	this.AccessUrl = accessUrl
 	this.PublishedAt = publishedAt
+	this.ExpiresAt = expiresAt
 	return &this
 }
 
@@ -242,6 +244,32 @@ func (o *StaticReleaseResponse) SetPublishedAt(v int64) {
 	o.PublishedAt = v
 }
 
+// GetExpiresAt returns the ExpiresAt field value
+// If the value is explicit nil, the zero value for int64 will be returned
+func (o *StaticReleaseResponse) GetExpiresAt() int64 {
+	if o == nil || o.ExpiresAt.Get() == nil {
+		var ret int64
+		return ret
+	}
+
+	return *o.ExpiresAt.Get()
+}
+
+// GetExpiresAtOk returns a tuple with the ExpiresAt field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *StaticReleaseResponse) GetExpiresAtOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.ExpiresAt.Get(), o.ExpiresAt.IsSet()
+}
+
+// SetExpiresAt sets field value
+func (o *StaticReleaseResponse) SetExpiresAt(v int64) {
+	o.ExpiresAt.Set(&v)
+}
+
 func (o StaticReleaseResponse) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -260,6 +288,7 @@ func (o StaticReleaseResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize["status"] = o.Status
 	toSerialize["access_url"] = o.AccessUrl.Get()
 	toSerialize["published_at"] = o.PublishedAt
+	toSerialize["expires_at"] = o.ExpiresAt.Get()
 	return toSerialize, nil
 }
 
@@ -276,6 +305,7 @@ func (o *StaticReleaseResponse) UnmarshalJSON(data []byte) (err error) {
 		"status",
 		"access_url",
 		"published_at",
+		"expires_at",
 	}
 
 	allProperties := make(map[string]interface{})

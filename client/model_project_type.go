@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// ProjectType 项目类型；unknown 表示服务端尚未识别的新类型，调用方应保持前向兼容。
+// ProjectType the model 'ProjectType'
 type ProjectType string
 
 // List of ProjectType

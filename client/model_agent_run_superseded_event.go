@@ -1,7 +1,6 @@
 package client
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -11,8 +10,9 @@ var _ MappedNullable = &AgentRunSupersededEvent{}
 
 // AgentRunSupersededEvent struct for AgentRunSupersededEvent
 type AgentRunSupersededEvent struct {
-	Event string                      `json:"event"`
-	Data  AgentRunSupersededEventData `json:"data"`
+	Event                string                      `json:"event"`
+	Data                 AgentRunSupersededEventData `json:"data"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _AgentRunSupersededEvent AgentRunSupersededEvent
@@ -96,6 +96,11 @@ func (o AgentRunSupersededEvent) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["event"] = o.Event
 	toSerialize["data"] = o.Data
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -124,14 +129,21 @@ func (o *AgentRunSupersededEvent) UnmarshalJSON(data []byte) (err error) {
 
 	varAgentRunSupersededEvent := _AgentRunSupersededEvent{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	err = decoder.Decode(&varAgentRunSupersededEvent)
+	err = json.Unmarshal(data, &varAgentRunSupersededEvent)
 
 	if err != nil {
 		return err
 	}
 
 	*o = AgentRunSupersededEvent(varAgentRunSupersededEvent)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "event")
+		delete(additionalProperties, "data")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -11,9 +11,10 @@ var _ MappedNullable = &AgentRunInputRequiredEventData{}
 
 // AgentRunInputRequiredEventData struct for AgentRunInputRequiredEventData
 type AgentRunInputRequiredEventData struct {
-	RunId  string         `json:"run_id"`
-	Status AgentRunStatus `json:"status"`
-	Action *AgentAction   `json:"action,omitempty"`
+	RunId string `json:"run_id"`
+	// Run 状态；客户端遇到未知取值时一律视为非终态。
+	Status string       `json:"status"`
+	Action *AgentAction `json:"action,omitempty"`
 	// 无 action 时的原因：当前阻塞工具不支持开放端回复，需在 Meoo Web 处理。
 	Detail *string `json:"detail,omitempty"`
 }
@@ -24,7 +25,7 @@ type _AgentRunInputRequiredEventData AgentRunInputRequiredEventData
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewAgentRunInputRequiredEventData(runId string, status AgentRunStatus) *AgentRunInputRequiredEventData {
+func NewAgentRunInputRequiredEventData(runId string, status string) *AgentRunInputRequiredEventData {
 	this := AgentRunInputRequiredEventData{}
 	this.RunId = runId
 	this.Status = status
@@ -64,9 +65,9 @@ func (o *AgentRunInputRequiredEventData) SetRunId(v string) {
 }
 
 // GetStatus returns the Status field value
-func (o *AgentRunInputRequiredEventData) GetStatus() AgentRunStatus {
+func (o *AgentRunInputRequiredEventData) GetStatus() string {
 	if o == nil {
-		var ret AgentRunStatus
+		var ret string
 		return ret
 	}
 
@@ -75,7 +76,7 @@ func (o *AgentRunInputRequiredEventData) GetStatus() AgentRunStatus {
 
 // GetStatusOk returns a tuple with the Status field value
 // and a boolean to check if the value has been set.
-func (o *AgentRunInputRequiredEventData) GetStatusOk() (*AgentRunStatus, bool) {
+func (o *AgentRunInputRequiredEventData) GetStatusOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -83,7 +84,7 @@ func (o *AgentRunInputRequiredEventData) GetStatusOk() (*AgentRunStatus, bool) {
 }
 
 // SetStatus sets field value
-func (o *AgentRunInputRequiredEventData) SetStatus(v AgentRunStatus) {
+func (o *AgentRunInputRequiredEventData) SetStatus(v string) {
 	o.Status = v
 }
 

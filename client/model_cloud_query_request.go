@@ -11,6 +11,7 @@ var _ MappedNullable = &CloudQueryRequest{}
 
 // CloudQueryRequest struct for CloudQueryRequest
 type CloudQueryRequest struct {
+	// 先去除首尾空白，再按 UTF-8 字节数校验 65536 字节上限。
 	Query string `json:"query"`
 }
 

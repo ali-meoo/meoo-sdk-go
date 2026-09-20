@@ -23,7 +23,7 @@ func (r ApiGetUserRequest) Execute() (*User, *http.Response, error) {
 /*
 GetUser 获取当前授权用户的用户信息
 
-单接口默认限频为每个 client_id 10,000 次/分钟、每个 client_id + 授权用户 120 次/分钟；同时受所有资源接口共享的来源 IP 20,000 次/分钟限制。
+接口按授权用户维度执行动态限流；同时受所有资源接口共享的来源 IP 20,000 次/分钟限制。
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@return ApiGetUserRequest

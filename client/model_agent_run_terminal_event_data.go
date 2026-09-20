@@ -11,8 +11,9 @@ var _ MappedNullable = &AgentRunTerminalEventData{}
 
 // AgentRunTerminalEventData struct for AgentRunTerminalEventData
 type AgentRunTerminalEventData struct {
-	RunId  string         `json:"run_id"`
-	Status AgentRunStatus `json:"status"`
+	RunId string `json:"run_id"`
+	// Run 状态；客户端遇到未知取值时一律视为非终态。
+	Status string `json:"status"`
 }
 
 type _AgentRunTerminalEventData AgentRunTerminalEventData
@@ -21,7 +22,7 @@ type _AgentRunTerminalEventData AgentRunTerminalEventData
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewAgentRunTerminalEventData(runId string, status AgentRunStatus) *AgentRunTerminalEventData {
+func NewAgentRunTerminalEventData(runId string, status string) *AgentRunTerminalEventData {
 	this := AgentRunTerminalEventData{}
 	this.RunId = runId
 	this.Status = status
@@ -61,9 +62,9 @@ func (o *AgentRunTerminalEventData) SetRunId(v string) {
 }
 
 // GetStatus returns the Status field value
-func (o *AgentRunTerminalEventData) GetStatus() AgentRunStatus {
+func (o *AgentRunTerminalEventData) GetStatus() string {
 	if o == nil {
-		var ret AgentRunStatus
+		var ret string
 		return ret
 	}
 
@@ -72,7 +73,7 @@ func (o *AgentRunTerminalEventData) GetStatus() AgentRunStatus {
 
 // GetStatusOk returns a tuple with the Status field value
 // and a boolean to check if the value has been set.
-func (o *AgentRunTerminalEventData) GetStatusOk() (*AgentRunStatus, bool) {
+func (o *AgentRunTerminalEventData) GetStatusOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -80,7 +81,7 @@ func (o *AgentRunTerminalEventData) GetStatusOk() (*AgentRunStatus, bool) {
 }
 
 // SetStatus sets field value
-func (o *AgentRunTerminalEventData) SetStatus(v AgentRunStatus) {
+func (o *AgentRunTerminalEventData) SetStatus(v string) {
 	o.Status = v
 }
 

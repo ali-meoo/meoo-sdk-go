@@ -403,6 +403,194 @@ func (a *AgentRunsAPIService) CreateAgentUploadExecute(r ApiCreateAgentUploadReq
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
+type ApiGetAgentCapabilitiesRequest struct {
+	ctx        context.Context
+	ApiService *AgentRunsAPIService
+	projectId  string
+}
+
+func (r ApiGetAgentCapabilitiesRequest) Execute() (*AgentCapabilities, *http.Response, error) {
+	return r.ApiService.GetAgentCapabilitiesExecute(r)
+}
+
+/*
+GetAgentCapabilities 查询项目当前可用的 Agent 模型与性能档位
+
+返回当前项目可用于启动 Agent Run 的 canonical 模型 ID、展示名称、性能档位和
+默认值。模型目录可能随服务配置变化，调用方不要硬编码模型列表；启动 Run 时的
+model 必须精确使用本接口当前返回的 id，不能使用内部别名。
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param projectId 项目的公开 URL ID。
+	@return ApiGetAgentCapabilitiesRequest
+*/
+func (a *AgentRunsAPIService) GetAgentCapabilities(ctx context.Context, projectId string) ApiGetAgentCapabilitiesRequest {
+	return ApiGetAgentCapabilitiesRequest{
+		ApiService: a,
+		ctx:        ctx,
+		projectId:  projectId,
+	}
+}
+
+// Execute executes the request
+//
+//	@return AgentCapabilities
+func (a *AgentRunsAPIService) GetAgentCapabilitiesExecute(r ApiGetAgentCapabilitiesRequest) (*AgentCapabilities, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *AgentCapabilities
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AgentRunsAPIService.GetAgentCapabilities")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/open/v1/projects/{project_id}/agent/capabilities"
+	localVarPath = strings.Replace(localVarPath, "{"+"project_id"+"}", url.PathEscape(parameterValueToString(r.projectId, "projectId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if strlen(r.projectId) < 1 {
+		return localVarReturnValue, nil, reportError("projectId must have at least 1 elements")
+	}
+	if strlen(r.projectId) > 50 {
+		return localVarReturnValue, nil, reportError("projectId must have less than 50 elements")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v Problem
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v Problem
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v Problem
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v Problem
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v Problem
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v Problem
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 503 {
+			var v Problem
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
 type ApiGetCurrentAgentRunRequest struct {
 	ctx        context.Context
 	ApiService *AgentRunsAPIService
@@ -1013,19 +1201,32 @@ func (r ApiStreamAgentRunEventsRequest) Execute() (string, *http.Response, error
 /*
 StreamAgentRunEvents 订阅指定 Run 的 SSE 事件
 
-仅输出 run.working、tool.call、message.delta、message.snapshot、preview.ready、
-run.input_required、run.completed、run.failed、run.canceled、run.interrupted
-和 run.superseded；
+仅输出 run.working、tool.call、tool.input.delta、tool.input.snapshot、
+message.delta、message.snapshot、preview.ready、
+run.input_required、run.usage、run.completed、run.failed、run.canceled、
+run.interrupted 和 run.superseded；
 各事件的 data 结构见 `#/components/schemas/AgentRunEvent`（按事件名判别）。
 每个事件帧携带单调递增的 `id: <n>`（本次连接内从 1 开始、逐事件帧加 1）；
 heartbeat 注释帧不带 id。服务端不支持 Last-Event-ID 续传：
-重连恢复的方式是重新订阅本端点，服务端会补发 message.snapshot。
+重连恢复的方式是重新订阅本端点，服务端会补发 message.snapshot。持久化
+message.snapshot 还会携带当前轮完整的白名单 tool_calls；客户端应整体替换工具状态。
 run.working 仅表示 Run 正在处理。tool.call 以工具名+状态粒度透出公开进度，
-phase 与 message 只出现在 tool.call，且不含工具参数与结果；未知的
-tool.call phase 一律视为进行中。
+phase 与 message 只出现在 tool.call，且不含工具参数与结果；Read 可额外携带
+安全 basename file_name，Skill 可额外携带解析后的名称，completed 可携带
+outcome。Bash 的 meoo-cli image-generate/video-generate 完成后可额外携带
+result：图片为 {type:"image",images:[HTTPS URL]}，视频为 {type:"video",video:HTTPS URL}。
+仅开放生成产物 URL，原样保留 CDN 签名；不透传普通 Bash 输出、提示词或内部字段。
+失败、取消、无可公开 URL 或超过投影限制时省略 result；图片最多 64 张，
+部分过滤或截断时 result.truncated=true。最终与重连 tool_calls 也包含这两类 Bash 调用。
+未知的 tool.call phase 一律视为进行中。
+订阅只要求 agent.read，并默认发送 Write/Edit 白名单字段的
+tool.input.delta 与 tool.input.snapshot。delta 使用追加语义，snapshot 是按
+tool_call_id 的权威全量状态，应整段替换；文件只返回 basename，不返回原始路径。
 message.delta 的 delta 追加到当前回复；message.snapshot 的 content 是全量快照，
-语义是整段替换该 Run 已累计的 delta 文本，调用方不得追加。服务端仅在建连/重连和
-终态前从现有消息存储恢复文本；heartbeat 不查询数据库，实时进度来自同一 SSE。
+语义是整段替换该 Run 已累计的 delta 文本，调用方不得追加。message.snapshot 的
+tool_calls 存在时是当前轮公开工具状态的全量快照；缺省时不得清空已有工具状态。
+服务端仅在建连/重连和终态前从现有消息存储恢复文本与工具；heartbeat 不查询数据库，
+实时进度来自同一 SSE。
 仅当内部 dev server 状态精确为 running 且短时 Preview Link 签发成功时发送
 preview.ready；starting、无效内部地址或签发失败均不发送该事件，也绝不暴露
 raw Sandbox URL。url 是短时 opaque 壳地址并携带必填 expires_at；客户端不得
@@ -1034,10 +1235,14 @@ run.input_required 的阻塞工具仍有效时，建连或重连会签发新的 
 expires_at；长连接存续期间会在半 TTL 时续签。run.superseded 表示订阅的
 Run 已被更新的 Run 取代；data.status 是旧 Run 的真实终态，current_run_id
 （如存在）仅标识接管的 Run。
+每次计量 END 成功并返回有效积分时发送一次 run.usage；同一 Run 因阻塞、恢复或
+Session 轮换可产生多条。客户端必须按稳定的 usage_id 去重，再对 credits_used
+求和；credits_used 是非负十进制整数字符串。重连可能重放同一 usage_id。
 run_id 不存在或不属于当前项目时，在建立 SSE 事件流之前返回 404。
 该端点当前使用 60 秒固定限频窗口；429 的 Retry-After=60 是固定窗口的
 安全等待上界，不是剩余 TTL，客户端应在等待基础上增加抖动后重试。
-最终 message.snapshot 先于终态事件。
+最终 message.snapshot 和最终 run.usage（若有）均先于正常终态事件；正常终态是
+本次事件流的最后一个业务帧。结算不可用时不会伪造 run.usage。
 首个终态事件后关闭连接。
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().

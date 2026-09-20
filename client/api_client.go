@@ -9,15 +9,19 @@ type APIClient struct {
 	// API Services
 	AgentHistoryApi   *AgentHistoryAPIService
 	AgentRunsApi      *AgentRunsAPIService
+	BillingApi        *BillingAPIService
 	CloudDatabaseApi  *CloudDatabaseAPIService
 	CloudFunctionsApi *CloudFunctionsAPIService
 	CloudSecretsApi   *CloudSecretsAPIService
 	CloudStorageApi   *CloudStorageAPIService
+	EntitlementsApi   *EntitlementsAPIService
 	PreviewApi        *PreviewAPIService
 	ProjectsApi       *ProjectsAPIService
 	ReleasesApi       *ReleasesAPIService
+	SandboxesApi      *SandboxesAPIService
 	SkillsApi         *SkillsAPIService
 	SourceApi         *SourceAPIService
+	TeamMembersApi    *TeamMembersAPIService
 	UserApi           *UserAPIService
 }
 
@@ -39,21 +43,25 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	// API Services
 	c.AgentHistoryApi = (*AgentHistoryAPIService)(&c.common)
 	c.AgentRunsApi = (*AgentRunsAPIService)(&c.common)
+	c.BillingApi = (*BillingAPIService)(&c.common)
 	c.CloudDatabaseApi = (*CloudDatabaseAPIService)(&c.common)
 	c.CloudFunctionsApi = (*CloudFunctionsAPIService)(&c.common)
 	c.CloudSecretsApi = (*CloudSecretsAPIService)(&c.common)
 	c.CloudStorageApi = (*CloudStorageAPIService)(&c.common)
+	c.EntitlementsApi = (*EntitlementsAPIService)(&c.common)
 	c.PreviewApi = (*PreviewAPIService)(&c.common)
 	c.ProjectsApi = (*ProjectsAPIService)(&c.common)
 	c.ReleasesApi = (*ReleasesAPIService)(&c.common)
+	c.SandboxesApi = (*SandboxesAPIService)(&c.common)
 	c.SkillsApi = (*SkillsAPIService)(&c.common)
 	c.SourceApi = (*SourceAPIService)(&c.common)
+	c.TeamMembersApi = (*TeamMembersAPIService)(&c.common)
 	c.UserApi = (*UserAPIService)(&c.common)
 
 	return c
 }
 
-// GetConfig exposes the client configuration for advanced usage from the meoo runtime package.
+// GetConfig exposes the client configuration for advanced usage from the higher-level runtime.
 func (c *APIClient) GetConfig() *Configuration {
 	return c.cfg
 }

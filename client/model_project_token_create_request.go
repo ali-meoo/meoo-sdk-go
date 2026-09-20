@@ -11,7 +11,9 @@ var _ MappedNullable = &ProjectTokenCreateRequest{}
 
 // ProjectTokenCreateRequest struct for ProjectTokenCreateRequest
 type ProjectTokenCreateRequest struct {
-	Name          string  `json:"name"`
+	// 先去除首尾空白，再校验长度。
+	Name string `json:"name"`
+	// 先去除首尾空白，再校验长度。
 	Description   *string `json:"description,omitempty"`
 	ExpiresInDays *int32  `json:"expires_in_days,omitempty"`
 	// 项目 API Key 权限；`*` 表示当前及未来所有允许配置给项目 API Key 的权限，`cli.compat` 表示绑定项目内的全部 CLI 兼容操作。

@@ -10,7 +10,9 @@ var _ MappedNullable = &StaticReleasePrepareRequest{}
 
 // StaticReleasePrepareRequest struct for StaticReleasePrepareRequest
 type StaticReleasePrepareRequest struct {
-	Runtime              string                              `json:"runtime"`
+	Runtime string `json:"runtime"`
+	// 发布访问过期时间，Unix 毫秒时间戳，范围 1-253402271999999；省略或 null 表示永久有效。
+	ExpiresAt            *int64                              `json:"expires_at,omitempty"`
 	Artifact             StaticReleasePrepareRequestArtifact `json:"artifact"`
 	AdditionalProperties map[string]interface{}
 }
@@ -60,6 +62,38 @@ func (o *StaticReleasePrepareRequest) SetRuntime(v string) {
 	o.Runtime = v
 }
 
+// GetExpiresAt returns the ExpiresAt field value if set, zero value otherwise.
+func (o *StaticReleasePrepareRequest) GetExpiresAt() int64 {
+	if o == nil || IsNil(o.ExpiresAt) {
+		var ret int64
+		return ret
+	}
+	return *o.ExpiresAt
+}
+
+// GetExpiresAtOk returns a tuple with the ExpiresAt field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *StaticReleasePrepareRequest) GetExpiresAtOk() (*int64, bool) {
+	if o == nil || IsNil(o.ExpiresAt) {
+		return nil, false
+	}
+	return o.ExpiresAt, true
+}
+
+// HasExpiresAt returns a boolean if a field has been set.
+func (o *StaticReleasePrepareRequest) HasExpiresAt() bool {
+	if o != nil && !IsNil(o.ExpiresAt) {
+		return true
+	}
+
+	return false
+}
+
+// SetExpiresAt gets a reference to the given int64 and assigns it to the ExpiresAt field.
+func (o *StaticReleasePrepareRequest) SetExpiresAt(v int64) {
+	o.ExpiresAt = &v
+}
+
 // GetArtifact returns the Artifact field value
 func (o *StaticReleasePrepareRequest) GetArtifact() StaticReleasePrepareRequestArtifact {
 	if o == nil {
@@ -95,6 +129,9 @@ func (o StaticReleasePrepareRequest) MarshalJSON() ([]byte, error) {
 func (o StaticReleasePrepareRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["runtime"] = o.Runtime
+	if !IsNil(o.ExpiresAt) {
+		toSerialize["expires_at"] = o.ExpiresAt
+	}
 	toSerialize["artifact"] = o.Artifact
 
 	for key, value := range o.AdditionalProperties {
@@ -141,6 +178,7 @@ func (o *StaticReleasePrepareRequest) UnmarshalJSON(data []byte) (err error) {
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "runtime")
+		delete(additionalProperties, "expires_at")
 		delete(additionalProperties, "artifact")
 		o.AdditionalProperties = additionalProperties
 	}

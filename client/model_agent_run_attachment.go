@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// AgentRunAttachment - 按 kind 判别的附件对象；包含未声明字段时返回 400 invalid_request。
+// AgentRunAttachment - struct for AgentRunAttachment
 type AgentRunAttachment struct {
 	AgentRunFileAttachment  *AgentRunFileAttachment
 	AgentRunMediaAttachment *AgentRunMediaAttachment

@@ -1,7 +1,6 @@
 package client
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -11,8 +10,9 @@ var _ MappedNullable = &AgentMessageDeltaEvent{}
 
 // AgentMessageDeltaEvent struct for AgentMessageDeltaEvent
 type AgentMessageDeltaEvent struct {
-	Event string                     `json:"event"`
-	Data  AgentMessageDeltaEventData `json:"data"`
+	Event                string                     `json:"event"`
+	Data                 AgentMessageDeltaEventData `json:"data"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _AgentMessageDeltaEvent AgentMessageDeltaEvent
@@ -96,6 +96,11 @@ func (o AgentMessageDeltaEvent) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["event"] = o.Event
 	toSerialize["data"] = o.Data
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -124,14 +129,21 @@ func (o *AgentMessageDeltaEvent) UnmarshalJSON(data []byte) (err error) {
 
 	varAgentMessageDeltaEvent := _AgentMessageDeltaEvent{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	err = decoder.Decode(&varAgentMessageDeltaEvent)
+	err = json.Unmarshal(data, &varAgentMessageDeltaEvent)
 
 	if err != nil {
 		return err
 	}
 
 	*o = AgentMessageDeltaEvent(varAgentMessageDeltaEvent)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "event")
+		delete(additionalProperties, "data")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

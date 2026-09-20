@@ -11,8 +11,9 @@ var _ MappedNullable = &AgentRunWorkingEventData{}
 
 // AgentRunWorkingEventData Run 正在处理；公开进度阶段与文案仅由 tool.call 事件承载。
 type AgentRunWorkingEventData struct {
-	RunId  string         `json:"run_id"`
-	Status AgentRunStatus `json:"status"`
+	RunId string `json:"run_id"`
+	// Run 状态；客户端遇到未知取值时一律视为非终态。
+	Status string `json:"status"`
 }
 
 type _AgentRunWorkingEventData AgentRunWorkingEventData
@@ -21,7 +22,7 @@ type _AgentRunWorkingEventData AgentRunWorkingEventData
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewAgentRunWorkingEventData(runId string, status AgentRunStatus) *AgentRunWorkingEventData {
+func NewAgentRunWorkingEventData(runId string, status string) *AgentRunWorkingEventData {
 	this := AgentRunWorkingEventData{}
 	this.RunId = runId
 	this.Status = status
@@ -61,9 +62,9 @@ func (o *AgentRunWorkingEventData) SetRunId(v string) {
 }
 
 // GetStatus returns the Status field value
-func (o *AgentRunWorkingEventData) GetStatus() AgentRunStatus {
+func (o *AgentRunWorkingEventData) GetStatus() string {
 	if o == nil {
-		var ret AgentRunStatus
+		var ret string
 		return ret
 	}
 
@@ -72,7 +73,7 @@ func (o *AgentRunWorkingEventData) GetStatus() AgentRunStatus {
 
 // GetStatusOk returns a tuple with the Status field value
 // and a boolean to check if the value has been set.
-func (o *AgentRunWorkingEventData) GetStatusOk() (*AgentRunStatus, bool) {
+func (o *AgentRunWorkingEventData) GetStatusOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -80,7 +81,7 @@ func (o *AgentRunWorkingEventData) GetStatusOk() (*AgentRunStatus, bool) {
 }
 
 // SetStatus sets field value
-func (o *AgentRunWorkingEventData) SetStatus(v AgentRunStatus) {
+func (o *AgentRunWorkingEventData) SetStatus(v string) {
 	o.Status = v
 }
 

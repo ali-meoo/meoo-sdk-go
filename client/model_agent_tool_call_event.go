@@ -1,7 +1,6 @@
 package client
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -11,8 +10,9 @@ var _ MappedNullable = &AgentToolCallEvent{}
 
 // AgentToolCallEvent struct for AgentToolCallEvent
 type AgentToolCallEvent struct {
-	Event string                 `json:"event"`
-	Data  AgentToolCallEventData `json:"data"`
+	Event                string                 `json:"event"`
+	Data                 AgentToolCallEventData `json:"data"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _AgentToolCallEvent AgentToolCallEvent
@@ -96,6 +96,11 @@ func (o AgentToolCallEvent) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["event"] = o.Event
 	toSerialize["data"] = o.Data
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -124,14 +129,21 @@ func (o *AgentToolCallEvent) UnmarshalJSON(data []byte) (err error) {
 
 	varAgentToolCallEvent := _AgentToolCallEvent{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	err = decoder.Decode(&varAgentToolCallEvent)
+	err = json.Unmarshal(data, &varAgentToolCallEvent)
 
 	if err != nil {
 		return err
 	}
 
 	*o = AgentToolCallEvent(varAgentToolCallEvent)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "event")
+		delete(additionalProperties, "data")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

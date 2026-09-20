@@ -11,10 +11,15 @@ var _ MappedNullable = &AgentRun{}
 
 // AgentRun struct for AgentRun
 type AgentRun struct {
-	ProjectId      string         `json:"project_id"`
-	RunId          string         `json:"run_id"`
-	ConversationId string         `json:"conversation_id"`
-	Status         AgentRunStatus `json:"status"`
+	ProjectId      string `json:"project_id"`
+	RunId          string `json:"run_id"`
+	ConversationId string `json:"conversation_id"`
+	// Run 状态；客户端遇到未知取值时一律视为非终态。
+	Status string `json:"status"`
+	// start 返回 Open 已校验并交给 Runtime 的模型选择；current 返回会话配置中最后持久化的 canonical 模型 ID；其他操作可省略。
+	Model *string `json:"model,omitempty"`
+	// start 返回 Open 已校验并交给 Runtime 的档位选择；current 返回会话配置中最后持久化的性能档位；其他操作可省略。
+	SpeedTier *string `json:"speed_tier,omitempty"`
 }
 
 type _AgentRun AgentRun
@@ -23,7 +28,7 @@ type _AgentRun AgentRun
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewAgentRun(projectId string, runId string, conversationId string, status AgentRunStatus) *AgentRun {
+func NewAgentRun(projectId string, runId string, conversationId string, status string) *AgentRun {
 	this := AgentRun{}
 	this.ProjectId = projectId
 	this.RunId = runId
@@ -113,9 +118,9 @@ func (o *AgentRun) SetConversationId(v string) {
 }
 
 // GetStatus returns the Status field value
-func (o *AgentRun) GetStatus() AgentRunStatus {
+func (o *AgentRun) GetStatus() string {
 	if o == nil {
-		var ret AgentRunStatus
+		var ret string
 		return ret
 	}
 
@@ -124,7 +129,7 @@ func (o *AgentRun) GetStatus() AgentRunStatus {
 
 // GetStatusOk returns a tuple with the Status field value
 // and a boolean to check if the value has been set.
-func (o *AgentRun) GetStatusOk() (*AgentRunStatus, bool) {
+func (o *AgentRun) GetStatusOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -132,8 +137,72 @@ func (o *AgentRun) GetStatusOk() (*AgentRunStatus, bool) {
 }
 
 // SetStatus sets field value
-func (o *AgentRun) SetStatus(v AgentRunStatus) {
+func (o *AgentRun) SetStatus(v string) {
 	o.Status = v
+}
+
+// GetModel returns the Model field value if set, zero value otherwise.
+func (o *AgentRun) GetModel() string {
+	if o == nil || IsNil(o.Model) {
+		var ret string
+		return ret
+	}
+	return *o.Model
+}
+
+// GetModelOk returns a tuple with the Model field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *AgentRun) GetModelOk() (*string, bool) {
+	if o == nil || IsNil(o.Model) {
+		return nil, false
+	}
+	return o.Model, true
+}
+
+// HasModel returns a boolean if a field has been set.
+func (o *AgentRun) HasModel() bool {
+	if o != nil && !IsNil(o.Model) {
+		return true
+	}
+
+	return false
+}
+
+// SetModel gets a reference to the given string and assigns it to the Model field.
+func (o *AgentRun) SetModel(v string) {
+	o.Model = &v
+}
+
+// GetSpeedTier returns the SpeedTier field value if set, zero value otherwise.
+func (o *AgentRun) GetSpeedTier() string {
+	if o == nil || IsNil(o.SpeedTier) {
+		var ret string
+		return ret
+	}
+	return *o.SpeedTier
+}
+
+// GetSpeedTierOk returns a tuple with the SpeedTier field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *AgentRun) GetSpeedTierOk() (*string, bool) {
+	if o == nil || IsNil(o.SpeedTier) {
+		return nil, false
+	}
+	return o.SpeedTier, true
+}
+
+// HasSpeedTier returns a boolean if a field has been set.
+func (o *AgentRun) HasSpeedTier() bool {
+	if o != nil && !IsNil(o.SpeedTier) {
+		return true
+	}
+
+	return false
+}
+
+// SetSpeedTier gets a reference to the given string and assigns it to the SpeedTier field.
+func (o *AgentRun) SetSpeedTier(v string) {
+	o.SpeedTier = &v
 }
 
 func (o AgentRun) MarshalJSON() ([]byte, error) {
@@ -150,6 +219,12 @@ func (o AgentRun) ToMap() (map[string]interface{}, error) {
 	toSerialize["run_id"] = o.RunId
 	toSerialize["conversation_id"] = o.ConversationId
 	toSerialize["status"] = o.Status
+	if !IsNil(o.Model) {
+		toSerialize["model"] = o.Model
+	}
+	if !IsNil(o.SpeedTier) {
+		toSerialize["speed_tier"] = o.SpeedTier
+	}
 	return toSerialize, nil
 }
 

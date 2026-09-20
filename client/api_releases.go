@@ -221,11 +221,11 @@ func (a *ReleasesAPIService) CompleteReleaseUploadExecute(r ApiCompleteReleaseUp
 }
 
 type ApiCreateReleaseRequest struct {
-	ctx            context.Context
-	ApiService     *ReleasesAPIService
-	projectId      string
-	idempotencyKey *string
-	requestBody    *map[string]interface{}
+	ctx                  context.Context
+	ApiService           *ReleasesAPIService
+	projectId            string
+	idempotencyKey       *string
+	releaseCreateRequest *ReleaseCreateRequest
 }
 
 // 幂等键，1 到 128 个字母、数字、下划线或连字符。 POST agent/runs 可选，在当前 24 小时内部准入窗口内去重； POST releases 必填，相同键在 24 小时内重放同一次发布结果。
@@ -234,8 +234,8 @@ func (r ApiCreateReleaseRequest) IdempotencyKey(idempotencyKey string) ApiCreate
 	return r
 }
 
-func (r ApiCreateReleaseRequest) RequestBody(requestBody map[string]interface{}) ApiCreateReleaseRequest {
-	r.requestBody = &requestBody
+func (r ApiCreateReleaseRequest) ReleaseCreateRequest(releaseCreateRequest ReleaseCreateRequest) ApiCreateReleaseRequest {
+	r.releaseCreateRequest = &releaseCreateRequest
 	return r
 }
 
@@ -248,6 +248,7 @@ CreateRelease 发布项目当前的生成结果
 
 当前仅支持 `type=web` 项目的默认 Web/静态站点发布，不能选择发布渠道。
 `app` 不会生成 APK/IPA，`miniprogram` 不会提交到小程序平台。
+可选 expires_at 设置发布访问过期时间（Unix 毫秒）；省略或 null 表示永久有效，过期后访问地址返回 404。
 返回命名 SSE 事件。相同凭证、用户、项目和 Idempotency-Key 在 24 小时内只启动一次发布；
 重连会重放已缓存事件。客户端断开不会取消后台发布。
 release.failed.message 返回经过脱敏、可安全展示给用户的具体失败原因；可由代码修复的失败会在同一字段附带构建错误，供 AI 定位文件、行列和编译问题。字段最长 4000 字符，不包含凭证、内部地址或原始上游响应。
@@ -314,7 +315,7 @@ func (a *ReleasesAPIService) CreateReleaseExecute(r ApiCreateReleaseRequest) (st
 		parameterAddToHeaderOrQuery(localVarHeaderParams, "Idempotency-Key", r.idempotencyKey, "simple", "")
 	}
 	// body params
-	localVarPostBody = r.requestBody
+	localVarPostBody = r.releaseCreateRequest
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -827,7 +828,7 @@ func (r ApiPrepareReleaseUploadRequest) Execute() (*StaticReleasePrepareResponse
 /*
 PrepareReleaseUpload 准备静态站点产物上传
 
-校验发布权限并返回临时 OSS PUT 地址和不可篡改的 release_token。当前仅支持静态站点 zip。
+校验发布权限并返回临时 OSS PUT 地址和不可篡改的 release_token。当前仅支持静态站点 zip；可选 expires_at 设置发布访问过期时间，省略或 null 表示永久有效。
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param projectId 项目的公开 URL ID。
@@ -1006,14 +1007,14 @@ func (a *ReleasesAPIService) PrepareReleaseUploadExecute(r ApiPrepareReleaseUplo
 }
 
 type ApiUnpublishReleaseRequest struct {
-	ctx        context.Context
-	ApiService *ReleasesAPIService
-	projectId  string
-	body       *map[string]interface{}
+	ctx         context.Context
+	ApiService  *ReleasesAPIService
+	projectId   string
+	requestBody *map[string]interface{}
 }
 
-func (r ApiUnpublishReleaseRequest) Body(body map[string]interface{}) ApiUnpublishReleaseRequest {
-	r.body = &body
+func (r ApiUnpublishReleaseRequest) RequestBody(requestBody map[string]interface{}) ApiUnpublishReleaseRequest {
+	r.requestBody = &requestBody
 	return r
 }
 
@@ -1085,7 +1086,7 @@ func (a *ReleasesAPIService) UnpublishReleaseExecute(r ApiUnpublishReleaseReques
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.body
+	localVarPostBody = r.requestBody
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err

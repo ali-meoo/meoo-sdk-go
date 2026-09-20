@@ -12,9 +12,10 @@ var _ MappedNullable = &Project{}
 // Project struct for Project
 type Project struct {
 	// 项目的公开 URL ID，不是数据库 BIGINT 主键。
-	UrlId string      `json:"url_id"`
-	Name  string      `json:"name"`
-	Type  ProjectType `json:"type"`
+	UrlId string `json:"url_id"`
+	Name  string `json:"name"`
+	// 项目类型；unknown 表示服务端尚未识别的新类型，调用方应保持前向兼容。
+	Type string `json:"type"`
 	// Unix 毫秒时间戳。
 	CreatedAt int64 `json:"created_at"`
 }
@@ -25,7 +26,7 @@ type _Project Project
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewProject(urlId string, name string, type_ ProjectType, createdAt int64) *Project {
+func NewProject(urlId string, name string, type_ string, createdAt int64) *Project {
 	this := Project{}
 	this.UrlId = urlId
 	this.Name = name
@@ -91,9 +92,9 @@ func (o *Project) SetName(v string) {
 }
 
 // GetType returns the Type field value
-func (o *Project) GetType() ProjectType {
+func (o *Project) GetType() string {
 	if o == nil {
-		var ret ProjectType
+		var ret string
 		return ret
 	}
 
@@ -102,7 +103,7 @@ func (o *Project) GetType() ProjectType {
 
 // GetTypeOk returns a tuple with the Type field value
 // and a boolean to check if the value has been set.
-func (o *Project) GetTypeOk() (*ProjectType, bool) {
+func (o *Project) GetTypeOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -110,7 +111,7 @@ func (o *Project) GetTypeOk() (*ProjectType, bool) {
 }
 
 // SetType sets field value
-func (o *Project) SetType(v ProjectType) {
+func (o *Project) SetType(v string) {
 	o.Type = v
 }
 

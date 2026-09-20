@@ -14,7 +14,7 @@ type CloudStorageBucket struct {
 	Name   string `json:"name"`
 	Public bool   `json:"public"`
 	// 字符串形式的字节数，避免 JavaScript 整数精度损失；未设置时为 null。
-	FileSizeLimit    NullableString `json:"file_size_limit" validate:"regexp=^[0-9]+$"`
+	FileSizeLimit    NullableString `json:"file_size_limit"`
 	AllowedMimeTypes []string       `json:"allowed_mime_types"`
 	CreatedAt        NullableInt64  `json:"created_at"`
 	UpdatedAt        NullableInt64  `json:"updated_at"`

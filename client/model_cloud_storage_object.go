@@ -14,7 +14,7 @@ type CloudStorageObject struct {
 	Name string `json:"name"`
 	Type string `json:"type"`
 	// 字符串形式的字节数；目录前缀为 null。
-	Size           NullableString `json:"size" validate:"regexp=^[0-9]+$"`
+	Size           NullableString `json:"size"`
 	MimeType       NullableString `json:"mime_type"`
 	CacheControl   NullableString `json:"cache_control"`
 	Etag           NullableString `json:"etag"`

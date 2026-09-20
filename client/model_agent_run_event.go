@@ -5,16 +5,19 @@ import (
 	"fmt"
 )
 
-// AgentRunEvent - Agent Run SSE 事件的判别式契约；event 即 SSE 帧的事件名， data 即 SSE 帧 data 行的 JSON。客户端必须忽略未知事件名。
+// AgentRunEvent - struct for AgentRunEvent
 type AgentRunEvent struct {
-	AgentMessageDeltaEvent     *AgentMessageDeltaEvent
-	AgentMessageSnapshotEvent  *AgentMessageSnapshotEvent
-	AgentPreviewReadyEvent     *AgentPreviewReadyEvent
-	AgentRunInputRequiredEvent *AgentRunInputRequiredEvent
-	AgentRunSupersededEvent    *AgentRunSupersededEvent
-	AgentRunTerminalEvent      *AgentRunTerminalEvent
-	AgentRunWorkingEvent       *AgentRunWorkingEvent
-	AgentToolCallEvent         *AgentToolCallEvent
+	AgentMessageDeltaEvent      *AgentMessageDeltaEvent
+	AgentMessageSnapshotEvent   *AgentMessageSnapshotEvent
+	AgentPreviewReadyEvent      *AgentPreviewReadyEvent
+	AgentRunInputRequiredEvent  *AgentRunInputRequiredEvent
+	AgentRunSupersededEvent     *AgentRunSupersededEvent
+	AgentRunTerminalEvent       *AgentRunTerminalEvent
+	AgentRunUsageEvent          *AgentRunUsageEvent
+	AgentRunWorkingEvent        *AgentRunWorkingEvent
+	AgentToolCallEvent          *AgentToolCallEvent
+	AgentToolInputDeltaEvent    *AgentToolInputDeltaEvent
+	AgentToolInputSnapshotEvent *AgentToolInputSnapshotEvent
 }
 
 // AgentMessageDeltaEventAsAgentRunEvent is a convenience function that returns AgentMessageDeltaEvent wrapped in AgentRunEvent
@@ -59,6 +62,13 @@ func AgentRunTerminalEventAsAgentRunEvent(v *AgentRunTerminalEvent) AgentRunEven
 	}
 }
 
+// AgentRunUsageEventAsAgentRunEvent is a convenience function that returns AgentRunUsageEvent wrapped in AgentRunEvent
+func AgentRunUsageEventAsAgentRunEvent(v *AgentRunUsageEvent) AgentRunEvent {
+	return AgentRunEvent{
+		AgentRunUsageEvent: v,
+	}
+}
+
 // AgentRunWorkingEventAsAgentRunEvent is a convenience function that returns AgentRunWorkingEvent wrapped in AgentRunEvent
 func AgentRunWorkingEventAsAgentRunEvent(v *AgentRunWorkingEvent) AgentRunEvent {
 	return AgentRunEvent{
@@ -70,6 +80,20 @@ func AgentRunWorkingEventAsAgentRunEvent(v *AgentRunWorkingEvent) AgentRunEvent 
 func AgentToolCallEventAsAgentRunEvent(v *AgentToolCallEvent) AgentRunEvent {
 	return AgentRunEvent{
 		AgentToolCallEvent: v,
+	}
+}
+
+// AgentToolInputDeltaEventAsAgentRunEvent is a convenience function that returns AgentToolInputDeltaEvent wrapped in AgentRunEvent
+func AgentToolInputDeltaEventAsAgentRunEvent(v *AgentToolInputDeltaEvent) AgentRunEvent {
+	return AgentRunEvent{
+		AgentToolInputDeltaEvent: v,
+	}
+}
+
+// AgentToolInputSnapshotEventAsAgentRunEvent is a convenience function that returns AgentToolInputSnapshotEvent wrapped in AgentRunEvent
+func AgentToolInputSnapshotEventAsAgentRunEvent(v *AgentToolInputSnapshotEvent) AgentRunEvent {
+	return AgentRunEvent{
+		AgentToolInputSnapshotEvent: v,
 	}
 }
 
@@ -155,6 +179,19 @@ func (dst *AgentRunEvent) UnmarshalJSON(data []byte) error {
 		dst.AgentRunTerminalEvent = nil
 	}
 
+	// try to unmarshal data into AgentRunUsageEvent
+	err = newStrictDecoder(data).Decode(&dst.AgentRunUsageEvent)
+	if err == nil {
+		jsonAgentRunUsageEvent, _ := json.Marshal(dst.AgentRunUsageEvent)
+		if string(jsonAgentRunUsageEvent) == "{}" { // empty struct
+			dst.AgentRunUsageEvent = nil
+		} else {
+			match++
+		}
+	} else {
+		dst.AgentRunUsageEvent = nil
+	}
+
 	// try to unmarshal data into AgentRunWorkingEvent
 	err = newStrictDecoder(data).Decode(&dst.AgentRunWorkingEvent)
 	if err == nil {
@@ -181,6 +218,32 @@ func (dst *AgentRunEvent) UnmarshalJSON(data []byte) error {
 		dst.AgentToolCallEvent = nil
 	}
 
+	// try to unmarshal data into AgentToolInputDeltaEvent
+	err = newStrictDecoder(data).Decode(&dst.AgentToolInputDeltaEvent)
+	if err == nil {
+		jsonAgentToolInputDeltaEvent, _ := json.Marshal(dst.AgentToolInputDeltaEvent)
+		if string(jsonAgentToolInputDeltaEvent) == "{}" { // empty struct
+			dst.AgentToolInputDeltaEvent = nil
+		} else {
+			match++
+		}
+	} else {
+		dst.AgentToolInputDeltaEvent = nil
+	}
+
+	// try to unmarshal data into AgentToolInputSnapshotEvent
+	err = newStrictDecoder(data).Decode(&dst.AgentToolInputSnapshotEvent)
+	if err == nil {
+		jsonAgentToolInputSnapshotEvent, _ := json.Marshal(dst.AgentToolInputSnapshotEvent)
+		if string(jsonAgentToolInputSnapshotEvent) == "{}" { // empty struct
+			dst.AgentToolInputSnapshotEvent = nil
+		} else {
+			match++
+		}
+	} else {
+		dst.AgentToolInputSnapshotEvent = nil
+	}
+
 	if match > 1 { // more than 1 match
 		// reset to nil
 		dst.AgentMessageDeltaEvent = nil
@@ -189,8 +252,11 @@ func (dst *AgentRunEvent) UnmarshalJSON(data []byte) error {
 		dst.AgentRunInputRequiredEvent = nil
 		dst.AgentRunSupersededEvent = nil
 		dst.AgentRunTerminalEvent = nil
+		dst.AgentRunUsageEvent = nil
 		dst.AgentRunWorkingEvent = nil
 		dst.AgentToolCallEvent = nil
+		dst.AgentToolInputDeltaEvent = nil
+		dst.AgentToolInputSnapshotEvent = nil
 
 		return fmt.Errorf("data matches more than one schema in oneOf(AgentRunEvent)")
 	} else if match == 1 {
@@ -226,12 +292,24 @@ func (src AgentRunEvent) MarshalJSON() ([]byte, error) {
 		return json.Marshal(&src.AgentRunTerminalEvent)
 	}
 
+	if src.AgentRunUsageEvent != nil {
+		return json.Marshal(&src.AgentRunUsageEvent)
+	}
+
 	if src.AgentRunWorkingEvent != nil {
 		return json.Marshal(&src.AgentRunWorkingEvent)
 	}
 
 	if src.AgentToolCallEvent != nil {
 		return json.Marshal(&src.AgentToolCallEvent)
+	}
+
+	if src.AgentToolInputDeltaEvent != nil {
+		return json.Marshal(&src.AgentToolInputDeltaEvent)
+	}
+
+	if src.AgentToolInputSnapshotEvent != nil {
+		return json.Marshal(&src.AgentToolInputSnapshotEvent)
 	}
 
 	return nil, nil // no data in oneOf schemas
@@ -266,12 +344,24 @@ func (obj *AgentRunEvent) GetActualInstance() interface{} {
 		return obj.AgentRunTerminalEvent
 	}
 
+	if obj.AgentRunUsageEvent != nil {
+		return obj.AgentRunUsageEvent
+	}
+
 	if obj.AgentRunWorkingEvent != nil {
 		return obj.AgentRunWorkingEvent
 	}
 
 	if obj.AgentToolCallEvent != nil {
 		return obj.AgentToolCallEvent
+	}
+
+	if obj.AgentToolInputDeltaEvent != nil {
+		return obj.AgentToolInputDeltaEvent
+	}
+
+	if obj.AgentToolInputSnapshotEvent != nil {
+		return obj.AgentToolInputSnapshotEvent
 	}
 
 	// all schemas are nil
@@ -304,12 +394,24 @@ func (obj AgentRunEvent) GetActualInstanceValue() interface{} {
 		return *obj.AgentRunTerminalEvent
 	}
 
+	if obj.AgentRunUsageEvent != nil {
+		return *obj.AgentRunUsageEvent
+	}
+
 	if obj.AgentRunWorkingEvent != nil {
 		return *obj.AgentRunWorkingEvent
 	}
 
 	if obj.AgentToolCallEvent != nil {
 		return *obj.AgentToolCallEvent
+	}
+
+	if obj.AgentToolInputDeltaEvent != nil {
+		return *obj.AgentToolInputDeltaEvent
+	}
+
+	if obj.AgentToolInputSnapshotEvent != nil {
+		return *obj.AgentToolInputSnapshotEvent
 	}
 
 	// all schemas are nil

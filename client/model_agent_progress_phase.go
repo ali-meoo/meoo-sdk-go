@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// AgentProgressPhase 公开进度阶段；客户端遇到未知取值时一律视为进行中。
+// AgentProgressPhase the model 'AgentProgressPhase'
 type AgentProgressPhase string
 
 // List of AgentProgressPhase

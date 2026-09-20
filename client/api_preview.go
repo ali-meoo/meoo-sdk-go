@@ -36,7 +36,8 @@ opaque 预览壳 URL；调用方不得解析 URL 或长期保存其中的 Ticket
 超过本次等待预算时返回 202，调用方按 Retry-After 重试本接口。链接过期后也
 通过本接口重新签发；请求不能指定目标 URL、Sandbox、端口或 TTL。本接口不读取
 也不使用 Idempotency-Key。项目不存在或不可见返回 404 not_found；当前项目不可
-预览返回 409 preview_not_ready；签名配置错误、依赖或上游不可用返回
+预览返回 409 preview_not_ready；租户沙箱并发达到上限返回 429
+sandbox_concurrency_limit_exceeded，detail 包含当前计数与上限；签名配置错误、依赖或上游不可用返回
 503 service_unavailable。
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().

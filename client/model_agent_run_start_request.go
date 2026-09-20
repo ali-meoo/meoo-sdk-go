@@ -19,6 +19,12 @@ type AgentRunStartRequest struct {
 	Skills []AgentRunSkillSelection `json:"skills,omitempty"`
 	// 传 true 会为本次 Run 开启 YOLO，并将开启状态保存到 Agent 状态快照， 供同项目后续 Run 继承。false 或不传不会主动开启，也不能清除已经持久化的 true。YOLO 仅应用服务端预置自动决策；需要真人完成的 OAuth、Secret 或 Input 场景仍可能按现有策略取消或关闭。本字段不会改变 HTTP 响应或 SSE 事件 Schema。
 	Yolo *bool `json:"yolo,omitempty"`
+	// 本次 Run 使用的 canonical 模型 ID，必须精确来自当前项目的 agent/capabilities 响应；未知、内部别名或已下线模型返回 400。 省略时使用 capabilities.defaults.model，包括继续会话的请求。
+	Model *string `json:"model,omitempty"`
+	// 每次 Run 独立选择的性能档位：fast 优先较低延迟，standard 为均衡默认值， deep 使用更多推理能力且可能增加延迟和消耗。省略时使用 standard， 包括继续会话的请求。
+	SpeedTier *string `json:"speed_tier,omitempty"`
+	// 仅本次 Run 禁用全部 meoo-cli cloud 能力（包含读取、帮助、数据库、鉴权、 存储及云函数），不产生云能力确认卡。工具恢复、上下文压缩及子 Agent 继承本次策略，YOLO 不能绕过。下一次 Run（含同会话继续）不传则恢复 false。 外部 API 不受限制；缺少可用后端时使用 mock，并在交付时说明模拟部分。 不关闭或删除已有云资源，不改变 HTTP 响应或 SSE 事件 Schema。
+	DisableCloud *bool `json:"disable_cloud,omitempty"`
 }
 
 type _AgentRunStartRequest AgentRunStartRequest
@@ -30,6 +36,8 @@ type _AgentRunStartRequest AgentRunStartRequest
 func NewAgentRunStartRequest(message string) *AgentRunStartRequest {
 	this := AgentRunStartRequest{}
 	this.Message = message
+	var disableCloud bool = false
+	this.DisableCloud = &disableCloud
 	return &this
 }
 
@@ -38,6 +46,8 @@ func NewAgentRunStartRequest(message string) *AgentRunStartRequest {
 // but it doesn't guarantee that properties required by API are set
 func NewAgentRunStartRequestWithDefaults() *AgentRunStartRequest {
 	this := AgentRunStartRequest{}
+	var disableCloud bool = false
+	this.DisableCloud = &disableCloud
 	return &this
 }
 
@@ -193,6 +203,102 @@ func (o *AgentRunStartRequest) SetYolo(v bool) {
 	o.Yolo = &v
 }
 
+// GetModel returns the Model field value if set, zero value otherwise.
+func (o *AgentRunStartRequest) GetModel() string {
+	if o == nil || IsNil(o.Model) {
+		var ret string
+		return ret
+	}
+	return *o.Model
+}
+
+// GetModelOk returns a tuple with the Model field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *AgentRunStartRequest) GetModelOk() (*string, bool) {
+	if o == nil || IsNil(o.Model) {
+		return nil, false
+	}
+	return o.Model, true
+}
+
+// HasModel returns a boolean if a field has been set.
+func (o *AgentRunStartRequest) HasModel() bool {
+	if o != nil && !IsNil(o.Model) {
+		return true
+	}
+
+	return false
+}
+
+// SetModel gets a reference to the given string and assigns it to the Model field.
+func (o *AgentRunStartRequest) SetModel(v string) {
+	o.Model = &v
+}
+
+// GetSpeedTier returns the SpeedTier field value if set, zero value otherwise.
+func (o *AgentRunStartRequest) GetSpeedTier() string {
+	if o == nil || IsNil(o.SpeedTier) {
+		var ret string
+		return ret
+	}
+	return *o.SpeedTier
+}
+
+// GetSpeedTierOk returns a tuple with the SpeedTier field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *AgentRunStartRequest) GetSpeedTierOk() (*string, bool) {
+	if o == nil || IsNil(o.SpeedTier) {
+		return nil, false
+	}
+	return o.SpeedTier, true
+}
+
+// HasSpeedTier returns a boolean if a field has been set.
+func (o *AgentRunStartRequest) HasSpeedTier() bool {
+	if o != nil && !IsNil(o.SpeedTier) {
+		return true
+	}
+
+	return false
+}
+
+// SetSpeedTier gets a reference to the given string and assigns it to the SpeedTier field.
+func (o *AgentRunStartRequest) SetSpeedTier(v string) {
+	o.SpeedTier = &v
+}
+
+// GetDisableCloud returns the DisableCloud field value if set, zero value otherwise.
+func (o *AgentRunStartRequest) GetDisableCloud() bool {
+	if o == nil || IsNil(o.DisableCloud) {
+		var ret bool
+		return ret
+	}
+	return *o.DisableCloud
+}
+
+// GetDisableCloudOk returns a tuple with the DisableCloud field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *AgentRunStartRequest) GetDisableCloudOk() (*bool, bool) {
+	if o == nil || IsNil(o.DisableCloud) {
+		return nil, false
+	}
+	return o.DisableCloud, true
+}
+
+// HasDisableCloud returns a boolean if a field has been set.
+func (o *AgentRunStartRequest) HasDisableCloud() bool {
+	if o != nil && !IsNil(o.DisableCloud) {
+		return true
+	}
+
+	return false
+}
+
+// SetDisableCloud gets a reference to the given bool and assigns it to the DisableCloud field.
+func (o *AgentRunStartRequest) SetDisableCloud(v bool) {
+	o.DisableCloud = &v
+}
+
 func (o AgentRunStartRequest) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -215,6 +321,15 @@ func (o AgentRunStartRequest) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Yolo) {
 		toSerialize["yolo"] = o.Yolo
+	}
+	if !IsNil(o.Model) {
+		toSerialize["model"] = o.Model
+	}
+	if !IsNil(o.SpeedTier) {
+		toSerialize["speed_tier"] = o.SpeedTier
+	}
+	if !IsNil(o.DisableCloud) {
+		toSerialize["disable_cloud"] = o.DisableCloud
 	}
 	return toSerialize, nil
 }

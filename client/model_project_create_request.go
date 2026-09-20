@@ -9,6 +9,7 @@ var _ MappedNullable = &ProjectCreateRequest{}
 
 // ProjectCreateRequest struct for ProjectCreateRequest
 type ProjectCreateRequest struct {
+	// 先去除首尾空白，再校验长度。
 	Name *string `json:"name,omitempty" validate:"regexp=\\\\S"`
 	// 可创建 web、app 或 miniprogram；非 Web 类型可创建不代表已开放其原生发布渠道。
 	Type *string `json:"type,omitempty"`

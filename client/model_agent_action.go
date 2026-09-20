@@ -1,7 +1,6 @@
 package client
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -19,7 +18,8 @@ type AgentAction struct {
 	// 回复 response 字段需满足的 JSON Schema。
 	InputSchema map[string]interface{} `json:"input_schema"`
 	// action_id 过期时间，Unix 毫秒时间戳。
-	ExpiresAt int64 `json:"expires_at"`
+	ExpiresAt            int64 `json:"expires_at"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _AgentAction AgentAction
@@ -181,6 +181,11 @@ func (o AgentAction) ToMap() (map[string]interface{}, error) {
 	toSerialize["prompt"] = o.Prompt
 	toSerialize["input_schema"] = o.InputSchema
 	toSerialize["expires_at"] = o.ExpiresAt
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -212,14 +217,24 @@ func (o *AgentAction) UnmarshalJSON(data []byte) (err error) {
 
 	varAgentAction := _AgentAction{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	err = decoder.Decode(&varAgentAction)
+	err = json.Unmarshal(data, &varAgentAction)
 
 	if err != nil {
 		return err
 	}
 
 	*o = AgentAction(varAgentAction)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "action_id")
+		delete(additionalProperties, "kind")
+		delete(additionalProperties, "prompt")
+		delete(additionalProperties, "input_schema")
+		delete(additionalProperties, "expires_at")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }
